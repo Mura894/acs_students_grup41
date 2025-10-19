@@ -4,6 +4,7 @@ import baseNoStates.DirectoryDoors;
 import baseNoStates.DirectoryUsers;
 import baseNoStates.Door;
 import baseNoStates.User;
+import baseNoStates.Area;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -29,8 +30,21 @@ public class RequestReader implements Request {
     this.now = now;
   }
 
+  // AÑADE ESTOS GETTERS QUE FALTAN:
+  public LocalDateTime getNow() {
+    return now;
+  }
+
+  public String getCredential() {
+    return credential;
+  }
+
   public void setDoorStateName(String name) {
     doorStateName = name;
+  }
+
+  public void setDoorClosed(boolean closed) {
+    doorClosed = closed;
   }
 
   public String getAction() {
@@ -45,6 +59,14 @@ public class RequestReader implements Request {
     reasons.add(reason);
   }
 
+  // Métodos para acceder a los estados de la puerta (si los necesitas)
+  public String getDoorStateName() {
+    return doorStateName;
+  }
+
+  public boolean isDoorClosed() {
+    return doorClosed;
+  }
 
   @Override
   public String toString() {
@@ -52,15 +74,15 @@ public class RequestReader implements Request {
       userName = "unknown";
     }
     return "Request{"
-            + "credential=" + credential
-            + ", userName=" + userName
-            + ", action=" + action
-            + ", now=" + now
-            + ", doorID=" + doorId
-            + ", closed=" + doorClosed
-            + ", authorized=" + authorized
-            + ", reasons=" + reasons
-            + "}";
+        + "credential=" + credential
+        + ", userName=" + userName
+        + ", action=" + action
+        + ", now=" + now
+        + ", doorID=" + doorId
+        + ", closed=" + doorClosed
+        + ", authorized=" + authorized
+        + ", reasons=" + reasons
+        + "}";
   }
 
   public JSONObject answerToJson() {
@@ -77,8 +99,18 @@ public class RequestReader implements Request {
   // see if the request is authorized and put this into the request, then send it to the door.
   // if authorized, perform the action.
   public void process() {
+    System.out.println("Processing reader request - Door: " + doorId + ", Action: " + action + ", User: " + credential);
+
     User user = DirectoryUsers.findUserByCredential(credential);
     Door door = DirectoryDoors.findDoorById(doorId);
+
+    if (door == null) {
+      System.out.println("ERROR: Door " + doorId + " not found");
+      authorized = false;
+      addReason("Door not found");
+      return;
+    }
+
     assert door != null : "door " + doorId + " not found";
     authorize(user, door);
     // this sets the boolean authorize attribute of the request
@@ -86,6 +118,8 @@ public class RequestReader implements Request {
     // even if not authorized we process the request, so that if desired we could log all
     // the requests made to the server as part of processing the request
     doorClosed = door.isClosed();
+
+    System.out.println("Request processed - Authorized: " + authorized + ", Final state: " + doorStateName);
   }
 
   // the result is put into the request object plus, if not authorized, why not,
@@ -93,12 +127,26 @@ public class RequestReader implements Request {
   private void authorize(User user, Door door) {
     if (user == null) {
       authorized = false;
-      addReason("user doesn't exists");
+      addReason("User doesn't exist");
+      System.out.println("Authorization failed: user not found");
     } else {
-      //TODO: get the who, where, when and what in order to decide, and if not
-      // authorized add the reason(s)
-      authorized = true;
+      System.out.println("Authorizing user: " + user.getUsername() + " for door: " + doorId);
+
+      // Obtener el área de destino de la puerta
+      Area areaTo = door.getAreaTo();
+      if (areaTo == null) {
+        System.out.println("Warning: Door " + doorId + " has no destination area");
+        authorized = true; // Temporal para testing
+      } else {
+        // Verificar permisos usando el grupo del usuario
+        authorized = user.canAccess(areaTo, getAction(), getNow());
+        if (!authorized) {
+          addReason(user.getReasonMessage());
+          System.out.println("Authorization failed: " + user.getReasonMessage());
+        } else {
+          System.out.println("Authorization granted for user: " + user.getUsername());
+        }
+      }
     }
   }
 }
-

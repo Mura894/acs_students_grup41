@@ -1,6 +1,10 @@
 package baseNoStates.requests;
 
 import baseNoStates.Actions;
+import baseNoStates.DirectoryAreas;
+import baseNoStates.DirectoryDoors;
+import baseNoStates.Door;
+import baseNoStates.Area;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,7 +43,6 @@ public class RequestArea implements Request {
       jsonRequests.put(rd.answerToJson());
     }
     json.put("requestsDoors", jsonRequests);
-    json.put("todo", "request areas not yet implemented");
     return json;
   }
 
@@ -64,9 +67,7 @@ public class RequestArea implements Request {
   // them to all of its doors. For some it may be authorized and action will be done, for others
   // it won't be authorized and nothing will happen to them.
   public void process() {
-    // commented out until Area, Space and Partition are implemented
 
-    /*
     // make the door requests and put them into the area request to be authorized later and
     // processed later
     Area area = DirectoryAreas.findAreaById(areaId);
@@ -78,13 +79,18 @@ public class RequestArea implements Request {
       // Make all the door requests, one for each door in the area, and process them.
       // Look for the doors in the spaces of this area that give access to them.
       for (Door door : area.getDoorsGivingAccess()) {
+        System.out.println("Processing door: " + door.getId() + " for area: " + areaId);//Solo para ver si funciona bien
         RequestReader requestReader = new RequestReader(credential, action, now, door.getId());
         requestReader.process();
         // after process() the area request contains the answer as the answer
         // to each individual door request, that is read by the simulator/Flutter app
         requests.add(requestReader);
       }
+      System.out.println("Processed " + requests.size() + " doors for area: " + areaId);//Solo para ver si funciona bien
     }
-     */
+    else {
+      System.out.println("Area " + areaId + " not found");//Solo para ver si funciona bien
+    }
+
   }
 }

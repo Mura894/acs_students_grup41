@@ -1,16 +1,31 @@
 package baseNoStates;
 
 import baseNoStates.requests.RequestReader;
+import baseNoStates.requests.RequestRefresh;
 import org.json.JSONObject;
 
+import java.time.LocalDateTime;
 
+//Class that represents a door and its actions
 public class Door {
   private final String id;
   private boolean closed; // physically
+  private State state;
+  private Area AreaTo;
+  // private static final Logger logger = LoggerFactory.getLogger(Door.class); // ← Comentado
 
   public Door(String id) {
     this.id = id;
     closed = true;
+    setState(new Unlocked(this));
+  }
+
+  public Door(String id, Area AreaFrom, Area AreaTo) {
+    this.id = id;
+    this.AreaTo = AreaTo;
+    this.AreaTo.getDoorsGivingAccess();
+    closed = true;
+    setState(new Unlocked(this));
   }
 
   public void processRequest(RequestReader request) {
@@ -20,18 +35,21 @@ public class Door {
       String action = request.getAction();
       doAction(action);
     } else {
-      System.out.println("not authorized");
+      System.out.println("Door " + id + ": not authorized"); // ← Cambiado a System.out
     }
     request.setDoorStateName(getStateName());
   }
 
   private void doAction(String action) {
+    System.out.println("Door " + id + ": processing action " + action); // ← Añadido para debugging
+
     switch (action) {
       case Actions.OPEN:
-        if (closed) {
+        if (closed && ((this.getStateName().equals("unlocked")) || (this.getStateName().equals("unlocked_shortly")))) {
           closed = false;
+          System.out.println("Door " + id + " opened"); // ← Añadido
         } else {
-          System.out.println("Can't open door " + id + " because it's already open");
+          System.out.println("Can't open door " + id + " because it's already open or locked"); // ← Cambiado
         }
         break;
       case Actions.CLOSE:
@@ -39,22 +57,31 @@ public class Door {
           System.out.println("Can't close door " + id + " because it's already closed");
         } else {
           closed = true;
+          System.out.println("✅ Door " + id + " closed");
+
+          // Si está en estado propped y se cierra, volver a locked
+          if (getStateName().equals("propped")) {
+            System.out.println("Door was PROPPED - returning to LOCKED state after close");
+            setState(new Locked(this));
+          }
         }
         break;
       case Actions.LOCK:
-        // TODO
-        // fall through
+        state.lock();
+        break;
       case Actions.UNLOCK:
-        // TODO
-        // fall through
+        state.unlock();
+        break;
       case Actions.UNLOCK_SHORTLY:
-        // TODO
-        System.out.println("Action " + action + " not implemented yet");
+        state.unlockShortly();
+        System.out.println("Unlock shortly action processed for door " + id);
         break;
       default:
         assert false : "Unknown action " + action;
         System.exit(-1);
     }
+
+    System.out.println("Door " + id + " state after action: " + getStateName() + ", closed: " + closed); // ← Añadido
   }
 
   public boolean isClosed() {
@@ -66,13 +93,17 @@ public class Door {
   }
 
   public String getStateName() {
-    return "unlocked";
+    return state.getState();
+  }
+
+  public Area getAreaTo() {
+    return AreaTo;
   }
 
   @Override
   public String toString() {
     return "Door{"
-        + ", id='" + id + '\''
+        + "id='" + id + '\''
         + ", closed=" + closed
         + ", state=" + getStateName()
         + "}";
@@ -84,5 +115,14 @@ public class Door {
     json.put("state", getStateName());
     json.put("closed", closed);
     return json;
+  }
+
+  public void setState(State estado) {
+    System.out.println("Door " + id + ": changing state from " +
+        (this.state != null ? this.state.getState() : "null") +
+        " to " + estado.getState()); // ← Añadido para debugging
+    this.state = estado;
+    this.state.setDoor(this);
+    state.intClock();
   }
 }
