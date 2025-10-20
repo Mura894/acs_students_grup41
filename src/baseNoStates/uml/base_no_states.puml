@@ -1,26 +1,9 @@
 @startuml
 !theme plain
 skinparam classAttributeIconSize 0
-title Sistema de Control de Acceso - Diagrama de Clases
+title Sistema de Control de Acceso - Núcleo del Dominio
 
-' === NÚCLEO DEL SISTEMA ===
-class Main {
-  + {static} main(args: String[])
-}
-
-class WebServer {
-  - {static} PORT: int
-  + WebServer()
-}
-
-class SocketThread {
-  - insocked: Socket
-  + run()
-}
-
-WebServer +-right- SocketThread
-
-' === SISTEMA DE PUERTAS Y ESTADOS ===
+' === SISTEMA DE PUERTAS Y ESTADOS (STATE PATTERN) ===
 class Door {
   - id: String
   - closed: boolean
@@ -70,7 +53,7 @@ State <|-- Unlocked
 State <|-- UnlockedShortly
 State <|-- Propped
 
-' === SISTEMA DE ÁREAS (COMPOSITE) ===
+' === SISTEMA DE ÁREAS (COMPOSITE PATTERN) ===
 abstract class Area {
   + {abstract} getName(): String
   + {abstract} getDoorsGivingAccess(): ArrayList<Door>
@@ -82,27 +65,20 @@ class Space extends Area {
   - doorList: ArrayList<Door>
   - name: String
   + addDoor(id: String)
+  + getDoorsGivingAccess(): ArrayList<Door>
 }
 
 class Partition extends Area {
   - areas: ArrayList<Area>
   - name: String
   + add(area: Area)
+  + getDoorsGivingAccess(): ArrayList<Door>
 }
 
 Partition *--> "0..*" Area : areas
-
-class DirectoryAreas {
-  - {static} instance: DirectoryAreas
-  - {static} allAreas: ArrayList<Area>
-  + {static} getInstance(): DirectoryAreas
-  + {static} findAreaById(name: String): Area
-}
-
-DirectoryAreas --> "*" Area : allAreas
 Space --> "*" Door : doorList
 
-' === SISTEMA DE USUARIOS Y PERMISOS ===
+' === SISTEMA DE USUARIOS Y PERMISOS (RBAC) ===
 class User {
   - name: String
   - credential: String
@@ -131,36 +107,7 @@ User --> "1" Group : group
 Group --> "1" Schedule : schedule
 Group --> "*" Area : areas
 
-class DirectoryUsers {
-  - {static} users: ArrayList<User>
-  + {static} findUserByCredential(credential: String): User
-}
-
-DirectoryUsers --> "*" User : users
-
-' === SISTEMA DE REQUESTS ===
-interface Request {
-  + process()
-  + answerToJson(): JSONObject
-}
-
-class RequestReader implements Request {
-  - credential: String
-  - action: String
-  - doorId: String
-  - now: LocalDateTime
-  + process()
-}
-
-class RequestArea implements Request {
-  - areaId: String
-  - requests: ArrayList<RequestReader>
-  + process()
-}
-
-RequestArea --> "*" RequestReader : requests
-
-' === SISTEMA DE TIEMPO ===
+' === SISTEMA DE TIEMPO (OBSERVER PATTERN) ===
 class Clock extends Observable implements Runnable {
   - {static} instance: Clock
   - running: boolean
@@ -170,39 +117,52 @@ class Clock extends Observable implements Runnable {
 
 UnlockedShortly .up.> Clock : observes
 
-' === DIRECTORIO DE PUERTAS ===
+' === DIRECTORIOS (SINGLETON + FACTORY) ===
 class DirectoryDoors {
   - {static} allDoors: ArrayList<Door>
   + {static} findDoorById(id: String): Door
+  + {static} getAllDoors(): ArrayList<Door>
+}
+
+class DirectoryUsers {
+  - {static} users: ArrayList<User>
+  + {static} findUserByCredential(credential: String): User
+}
+
+class DirectoryAreas {
+  - {static} instance: DirectoryAreas
+  - {static} allAreas: ArrayList<Area>
+  + {static} getInstance(): DirectoryAreas
+  + {static} findAreaById(name: String): Area
 }
 
 DirectoryDoors --> "*" Door : allDoors
-
-' === RELACIONES PRINCIPALES ===
-Main --> WebServer : creates
-SocketThread --> Request : processes
-RequestReader --> DirectoryUsers : queries
-RequestReader --> DirectoryDoors : queries
-RequestReader --> Door : processes
-RequestArea --> DirectoryAreas : queries
+DirectoryUsers --> "*" User : users
+DirectoryAreas --> "*" Area : allAreas
 
 ' === NOTAS EXPLICATIVAS ===
 note top of State
-<b>State Pattern</b>
+<b>STATE PATTERN</b>
 Comportamiento polimórfico
 para estados de puerta
 end note
 
 note top of Partition
-<b>Composite Pattern</b>
-Jerarquía recursiva
-de áreas y espacios
+<b>COMPOSITE PATTERN</b>
+Jerarquía recursiva de áreas
+y espacios
 end note
 
 note top of Clock
-<b>Observer Pattern</b>
+<b>OBSERVER PATTERN</b>
 Notificaciones cada segundo
 para transiciones automáticas
+end note
+
+note top of DirectoryDoors
+<b>SINGLETON + FACTORY</b>
+Una instancia global
+centraliza creación
 end note
 
 @enduml
