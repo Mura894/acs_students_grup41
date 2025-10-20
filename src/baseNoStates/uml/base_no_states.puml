@@ -1,194 +1,208 @@
 @startuml
-'https://plantuml.com/class-diagram
+!theme plain
 skinparam classAttributeIconSize 0
+title Sistema de Control de Acceso - Diagrama de Clases
 
-class Webserver {
-- {static} PORT :int
-- {static} FORMATTER : DateTimeFormatter
-+ Webserver()
+' === NÚCLEO DEL SISTEMA ===
+class Main {
+  + {static} main(args: String[])
+}
+
+class WebServer {
+  - {static} PORT: int
+  + WebServer()
 }
 
 class SocketThread {
-- insocked : Socked
-- makeRequest(tokens : String[]) : Request
-- makeRequestReader(tokens : String[]) : RequestReader
-- makeRequestArea(tokens : String[]) : RequestArea
-- makeHeaderAnswer() : String
-- makeJsonAnswer(request : Request) : String
-+ run()
+  - insocked: Socket
+  + run()
 }
 
-Webserver +-right- SocketThread
+WebServer +-right- SocketThread
 
-note right of SocketThread
-inner class
-of Webserver
-end note
-
-class DirectoryDoors {
-- {static} allDoors : Door[]
-+ {static} makeDoors()
-+ {static} findDoorById(id : String) : Door
-+ {static} getAllDoors() : Door[]
-}
-
-DirectoryDoors --> "*" Door : "allDoors"
-
-class DirectoryUsers {
-- {static} users : User[]
-+ {static} makeUsers()
-+ {static} findUserByCredential(credential : String) : User
-}
-
-DirectoryUsers --> "*" User : "users"
-
+' === SISTEMA DE PUERTAS Y ESTADOS ===
 class Door {
-- id : String
-- closed : boolean
-+ Door(id : String)
-+ processRequest(request : RequestReader)
-+ setState(doorState : DoorState)
-+ toJson() : JSONObject
-'+ toString() : String
-'+ isClosed() :boolean
-'+ setClosed(b : boolean)
-'+ getStateName() : String
-- doAction(action : String)
+  - id: String
+  - closed: boolean
+  - state: State
+  + processRequest(request: RequestReader)
+  + setState(state: State)
+  + toJson(): JSONObject
 }
-
 
 abstract class State {
-    + void lock()
-    + void unlock()
-    + void unlockShortly()
-    + void setDoor(Door door)
-    + String getState()
-    + void intClock()
+  + {abstract} lock()
+  + {abstract} unlock()
+  + {abstract} unlockShortly()
+  + {abstract} setDoor(door: Door)
+  + {abstract} getState(): String
+  + {abstract} intClock()
 }
+
 class Locked {
-    - Door door
-    + Locked(Door door)
-    + void unlock()
-    + void lock()
-    + void unlockShortly()
-    + void setDoor(Door door)
-    + String getState()
-    + void intClock()
+  + lock()
+  + unlock()
+  + unlockShortly()
 }
+
 class Unlocked {
-    - Door door
-    + Unlocked(Door door)
-    + void unlock()
-    + void lock()
-    + void unlockShortly()
-    + void setDoor(Door door)
-    + String getState()
-    + void intClock()
-}
-' Abstract class declaration
-abstract class Area {
-    + String getName()
-    + ArrayList<Door> getDoorsGivingAccess()
-    + Area findAreaById(String Name)
-    + JSONObject toJson(int depth)
-}
-' Abstract Component
-abstract class Area {
-    + String getName()
-    + ArrayList<Door> getDoorsGivingAccess()
-    + Area findAreaById(String Name)
-    + JSONObject toJson(int depth)
+  + lock()
+  + unlock()
+  + unlockShortly()
 }
 
-class DirectoryAreas {
-    - static DirectoryAreas instance
-    - static ArrayList<Area> allAreas
-    - static Partition building
-    - static Area rootArea
-    + static DirectoryAreas getInstance()
-    + static void makeAreas()
-    + static Area findAreaById(String name)
-}
-' Leaf
-class Space extends Area {
-    - ArrayList<Door> doorList
-    - String name
-    + Space(String s)
-    + String getName()
-    + void addDoor(String id)
-    + ArrayList<Door> getDoorsGivingAccess()
-    + Area findAreaById(String Name)
-    + JSONObject toJson(int depth)
-}
-class Partition {
-    - ArrayList<Area> spaceList
-    - String name
-    + Partition(String s)
-    + void add(Area area)
-    + ArrayList<Area> getAreas()
-    + String getName()
-    + ArrayList<Door> getDoorsGivingAccess()
-    + Area findAreaById(String Name)
-    + JSONObject toJson(int depth)
+class UnlockedShortly {
+  - dateTime: LocalDateTime
+  - clock: Clock
+  + update(Observable, Object)
+  + intClock()
 }
 
-' Composite
-class Partition extends Area {
-    - ArrayList<Area> spaceList
-    - String name
-    + Partition(String s)
-    + void add(Area area)
-    + ArrayList<Area> getAreas()
-    + String getName()
-    + ArrayList<Door> getDoorsGivingAccess()
-    + Area findAreaById(String Name)
-    + JSONObject toJson(int depth)
+class Propped {
+  + lock()
+  + unlock()
+  + unlockShortly()
 }
 
-class User {
-- name : String
-- credential : String
-+ User(name: String, credential: String)
-+ toString() : String
-}
-class Group {
-    - String name
-    - ArrayList<String> actions
-    - ArrayList<User> user
-    - ArrayList<Area> areas
-    - Schedule schedule
-    - int reason
-    + Group(String name, ArrayList<String> actions, ArrayList<User> user, ArrayList<Area> areas, Schedule schedule)
-    + String getName()
-    + void addUser(User user)
-    + int getReason()
-    + void setReason(int reason)
-    + boolean canAccess(Area area, String action, LocalDateTime now)
-    + String getReasonMessage()
-    + ArrayList<User> getUsers()
-}
-
-Door --> Space : "fromSpace"
-Door --> Space : "toSpace"
-DirectoryAreas -->"*" Area
-Door --> State : current state
+Door *--> "1" State : state
 State <|-- Locked
 State <|-- Unlocked
-Group --> "1..*" User
-Group --> "1..*" Area : has access to
+State <|-- UnlockedShortly
+State <|-- Propped
 
-
-class Main {
-+ {static} main(args : String)
+' === SISTEMA DE ÁREAS (COMPOSITE) ===
+abstract class Area {
+  + {abstract} getName(): String
+  + {abstract} getDoorsGivingAccess(): ArrayList<Door>
+  + {abstract} findAreaById(name: String): Area
+  + {abstract} toJson(depth: int): JSONObject
 }
 
-note right of Main::main
-DirectoryDoors.makeDoors()
-DiretoryUsers.makeUsers()
-new Webserver()
+class Space extends Area {
+  - doorList: ArrayList<Door>
+  - name: String
+  + addDoor(id: String)
+}
+
+class Partition extends Area {
+  - areas: ArrayList<Area>
+  - name: String
+  + add(area: Area)
+}
+
+Partition *--> "0..*" Area : areas
+
+class DirectoryAreas {
+  - {static} instance: DirectoryAreas
+  - {static} allAreas: ArrayList<Area>
+  + {static} getInstance(): DirectoryAreas
+  + {static} findAreaById(name: String): Area
+}
+
+DirectoryAreas --> "*" Area : allAreas
+Space --> "*" Door : doorList
+
+' === SISTEMA DE USUARIOS Y PERMISOS ===
+class User {
+  - name: String
+  - credential: String
+  - group: Group
+  + canAccess(area: Area, action: String, now: LocalDateTime): boolean
+}
+
+class Group {
+  - name: String
+  - actions: ArrayList<String>
+  - users: ArrayList<User>
+  - areas: ArrayList<Area>
+  - schedule: Schedule
+  + canAccess(area: Area, action: String, now: LocalDateTime): boolean
+}
+
+class Schedule {
+  - fromDate: LocalDateTime
+  - toDate: LocalDateTime
+  - fromHour: LocalTime
+  - toHour: LocalTime
+  + canAccess(now: LocalDateTime): int
+}
+
+User --> "1" Group : group
+Group --> "1" Schedule : schedule
+Group --> "*" Area : areas
+
+class DirectoryUsers {
+  - {static} users: ArrayList<User>
+  + {static} findUserByCredential(credential: String): User
+}
+
+DirectoryUsers --> "*" User : users
+
+' === SISTEMA DE REQUESTS ===
+interface Request {
+  + process()
+  + answerToJson(): JSONObject
+}
+
+class RequestReader implements Request {
+  - credential: String
+  - action: String
+  - doorId: String
+  - now: LocalDateTime
+  + process()
+}
+
+class RequestArea implements Request {
+  - areaId: String
+  - requests: ArrayList<RequestReader>
+  + process()
+}
+
+RequestArea --> "*" RequestReader : requests
+
+' === SISTEMA DE TIEMPO ===
+class Clock extends Observable implements Runnable {
+  - {static} instance: Clock
+  - running: boolean
+  + {static} getInstance(): Clock
+  + run()
+}
+
+UnlockedShortly .up.> Clock : observes
+
+' === DIRECTORIO DE PUERTAS ===
+class DirectoryDoors {
+  - {static} allDoors: ArrayList<Door>
+  + {static} findDoorById(id: String): Door
+}
+
+DirectoryDoors --> "*" Door : allDoors
+
+' === RELACIONES PRINCIPALES ===
+Main --> WebServer : creates
+SocketThread --> Request : processes
+RequestReader --> DirectoryUsers : queries
+RequestReader --> DirectoryDoors : queries
+RequestReader --> Door : processes
+RequestArea --> DirectoryAreas : queries
+
+' === NOTAS EXPLICATIVAS ===
+note top of State
+<b>State Pattern</b>
+Comportamiento polimórfico
+para estados de puerta
 end note
 
-Main -[hidden]down- Webserver
-Webserver -[hidden]down- DirectoryDoors
-DirectoryDoors -[hidden]right- DirectoryUsers
+note top of Partition
+<b>Composite Pattern</b>
+Jerarquía recursiva
+de áreas y espacios
+end note
+
+note top of Clock
+<b>Observer Pattern</b>
+Notificaciones cada segundo
+para transiciones automáticas
+end note
+
 @enduml
