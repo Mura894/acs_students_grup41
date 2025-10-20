@@ -120,6 +120,17 @@ class Space extends Area {
     + Area findAreaById(String Name)
     + JSONObject toJson(int depth)
 }
+class Partition {
+    - ArrayList<Area> spaceList
+    - String name
+    + Partition(String s)
+    + void add(Area area)
+    + ArrayList<Area> getAreas()
+    + String getName()
+    + ArrayList<Door> getDoorsGivingAccess()
+    + Area findAreaById(String Name)
+    + JSONObject toJson(int depth)
+}
 
 ' Composite
 class Partition extends Area {
@@ -140,13 +151,31 @@ class User {
 + User(name: String, credential: String)
 + toString() : String
 }
+class Group {
+    - String name
+    - ArrayList<String> actions
+    - ArrayList<User> user
+    - ArrayList<Area> areas
+    - Schedule schedule
+    - int reason
+    + Group(String name, ArrayList<String> actions, ArrayList<User> user, ArrayList<Area> areas, Schedule schedule)
+    + String getName()
+    + void addUser(User user)
+    + int getReason()
+    + void setReason(int reason)
+    + boolean canAccess(Area area, String action, LocalDateTime now)
+    + String getReasonMessage()
+    + ArrayList<User> getUsers()
+}
 
 Door --> Space : "fromSpace"
 Door --> Space : "toSpace"
 DirectoryAreas -->"*" Area
-Door --> State : current state >
+Door --> State : current state
 State <|-- Locked
 State <|-- Unlocked
+Group --> "1..*" User
+Group --> "1..*" Area : has access to
 
 
 class Main {
