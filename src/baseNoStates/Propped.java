@@ -44,6 +44,6 @@ public class Propped extends State {
 
   @Override
   public void intClock() {
-    // No necesita clock en estado propped
-  }
+// Does not need clock in propped state
+ }
 }

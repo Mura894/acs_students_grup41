@@ -58,7 +58,7 @@ public class Door {
           closed = true;
           System.out.println("✅ Door " + id + " closed");
 
-          // Si está en estado propped y se cierra, volver a locked
+          // If it is in the propped state and is closed, return to locked
           if (getStateName().equals("propped")) {
             System.out.println("Door was PROPPED - returning to LOCKED state after close");
             setState(new Locked(this));
