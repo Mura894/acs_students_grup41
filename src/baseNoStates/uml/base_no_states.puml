@@ -57,12 +57,96 @@ class Door {
 }
 
 
+abstract class State {
+    + void lock()
+    + void unlock()
+    + void unlockShortly()
+    + void setDoor(Door door)
+    + String getState()
+    + void intClock()
+}
+class Locked {
+    - Door door
+    + Locked(Door door)
+    + void unlock()
+    + void lock()
+    + void unlockShortly()
+    + void setDoor(Door door)
+    + String getState()
+    + void intClock()
+}
+class Unlocked {
+    - Door door
+    + Unlocked(Door door)
+    + void unlock()
+    + void lock()
+    + void unlockShortly()
+    + void setDoor(Door door)
+    + String getState()
+    + void intClock()
+}
+' Abstract class declaration
+abstract class Area {
+    + String getName()
+    + ArrayList<Door> getDoorsGivingAccess()
+    + Area findAreaById(String Name)
+    + JSONObject toJson(int depth)
+}
+' Abstract Component
+abstract class Area {
+    + String getName()
+    + ArrayList<Door> getDoorsGivingAccess()
+    + Area findAreaById(String Name)
+    + JSONObject toJson(int depth)
+}
+
+class DirectoryAreas {
+    - static DirectoryAreas instance
+    - static ArrayList<Area> allAreas
+    - static Partition building
+    - static Area rootArea
+    + static DirectoryAreas getInstance()
+    + static void makeAreas()
+    + static Area findAreaById(String name)
+}
+' Leaf
+class Space extends Area {
+    - ArrayList<Door> doorList
+    - String name
+    + Space(String s)
+    + String getName()
+    + void addDoor(String id)
+    + ArrayList<Door> getDoorsGivingAccess()
+    + Area findAreaById(String Name)
+    + JSONObject toJson(int depth)
+}
+
+' Composite
+class Partition extends Area {
+    - ArrayList<Area> spaceList
+    - String name
+    + Partition(String s)
+    + void add(Area area)
+    + ArrayList<Area> getAreas()
+    + String getName()
+    + ArrayList<Door> getDoorsGivingAccess()
+    + Area findAreaById(String Name)
+    + JSONObject toJson(int depth)
+}
+
 class User {
 - name : String
 - credential : String
 + User(name: String, credential: String)
 + toString() : String
 }
+
+Door --> Space : "fromSpace"
+Door --> Space : "toSpace"
+DirectoryAreas -->"*" Area
+Door --> State : current state >
+State <|-- Locked
+State <|-- Unlocked
 
 
 class Main {
