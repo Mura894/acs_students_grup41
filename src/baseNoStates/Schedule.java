@@ -4,68 +4,88 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-//User schedule class
 public class Schedule {
   private final LocalDateTime fromDate;
   private final LocalDateTime toDate;
   private final LocalTime fromHour;
   private final LocalTime toHour;
-  private final DayOfWeek toDayOfWeek;
   private final DayOfWeek fromDayOfWeek;
+  private final DayOfWeek toDayOfWeek;
 
-  public Schedule(LocalDateTime fromdate, LocalDateTime todate, LocalTime fromhour, LocalTime tohour, DayOfWeek toDayOfWeek, DayOfWeek fromDayOfWeek) {
-    this.fromDate = fromdate;
-    this.toDate = todate;
-    this.fromHour = fromhour;
-    this.toHour = tohour;
-    this.toDayOfWeek = toDayOfWeek;
+  public Schedule(LocalDateTime fromDate, LocalDateTime toDate, LocalTime fromHour, LocalTime toHour, DayOfWeek fromDayOfWeek, DayOfWeek toDayOfWeek) {
+    this.fromDate = fromDate;
+    this.toDate = toDate;
+    this.fromHour = fromHour;
+    this.toHour = toHour;
     this.fromDayOfWeek = fromDayOfWeek;
+    this.toDayOfWeek = toDayOfWeek;
 
-    System.out.println("Schedule created: " + fromdate + " to " + todate +
-            ", Hours: " + fromhour + "-" + tohour +
-            ", Days: " + fromDayOfWeek + "-" + toDayOfWeek);
+    System.out.println("Schedule created: " + fromDate + " to " + toDate +
+        ", Hours: " + fromHour + "-" + toHour +
+        ", Days: " + fromDayOfWeek + "-" + toDayOfWeek);
   }
 
   public int canAccess(LocalDateTime now) {
     LocalTime horaActual = now.toLocalTime();
     DayOfWeek dia = now.getDayOfWeek();
 
-    System.out.println("Checking schedule for: " + now + " (Day: " + dia + ", Time: " + horaActual + ")");
+    System.out.println("=== SCHEDULE CHECK ===");
+    System.out.println("Checking schedule for: " + now);
+    System.out.println("Current day: " + dia + " (value: " + dia.getValue() + ")");
+    System.out.println("Allowed days: " + fromDayOfWeek + " to " + toDayOfWeek +
+        " (values: " + fromDayOfWeek.getValue() + "-" + toDayOfWeek.getValue() + ")");
+    System.out.println("Current time: " + horaActual);
+    System.out.println("Allowed time: " + fromHour + " to " + toHour);
 
-    // Check date
-    if (now.isBefore(fromDate) || now.isAfter(toDate)) {
-      System.out.println("Date out of range: " + now + " not between " + fromDate + " and " + toDate);
-      return 3; // Invalid date
+    // 1. Verificar fecha (rango de fechas)
+    if (now.isBefore(fromDate)) {
+      System.out.println("❌ Date too early: " + now + " is before " + fromDate);
+      return 3; // Invalid date (too early)
     }
+    if (now.isAfter(toDate)) {
+      System.out.println("❌ Date too late: " + now + " is after " + toDate);
+      return 3; // Invalid date (too late)
+    }
+    System.out.println("✅ Date check passed");
 
-    // Check day of the week
+    // 2. Verificar día de la semana - LÓGICA CORREGIDA
     int diaValue = dia.getValue();
     int fromDayValue = fromDayOfWeek.getValue();
     int toDayValue = toDayOfWeek.getValue();
 
-    // Handle ranges that cross Sunday (e.g., Friday to Monday)
-    boolean validDay;
+    boolean diaValido;
+
     if (fromDayValue <= toDayValue) {
-      // Normal range (e.g., Monday to Friday)
-      validDay = (diaValue >= fromDayValue && diaValue <= toDayValue);
+      // Rango normal (ej: Lunes=1 a Viernes=5)
+      diaValido = (diaValue >= fromDayValue && diaValue <= toDayValue);
+      System.out.println("Normal range check: " + diaValue + " between " + fromDayValue + " and " + toDayValue + " = " + diaValido);
     } else {
-      // Range that crosses Sunday (e.g., Friday to Monday)
-      validDay = (diaValue >= fromDayValue || diaValue <= toDayValue);
+      // Rango que cruza domingo (ej: Viernes=5 a Lunes=1)
+      diaValido = (diaValue >= fromDayValue || diaValue <= toDayValue);
+      System.out.println("Weekend cross check: " + diaValue + " >= " + fromDayValue + " OR " + diaValue + " <= " + toDayValue + " = " + diaValido);
     }
 
-    if (!validDay) {
-      System.out.println("Day not allowed: " + dia + " not between " + fromDayOfWeek + " and " + toDayOfWeek);
+    if (!diaValido) {
+      System.out.println("❌ Day not allowed: " + dia + " not between " + fromDayOfWeek + " and " + toDayOfWeek);
       return 4; // Invalid day of the week
     }
+    System.out.println("✅ Day check passed");
 
-    // Check time
-    if (horaActual.isBefore(fromHour) || horaActual.isAfter(toHour)) {
-      System.out.println("Time not allowed: " + horaActual + " not between " + fromHour + " and " + toHour);
-      return 5; // Invalid time
+    // 3. Verificar hora del día
+    if (horaActual.isBefore(fromHour)) {
+      System.out.println("❌ Time too early: " + horaActual + " is before " + fromHour);
+      return 5; // Invalid time (too early)
     }
+    if (horaActual.isAfter(toHour)) {
+      System.out.println("❌ Time too late: " + horaActual + " is after " + toHour);
+      return 5; // Invalid time (too late)
+    }
+    System.out.println("✅ Time check passed");
 
-    System.out.println("Schedule check passed for: " + now);
+    System.out.println("🎉 Schedule check PASSED for: " + now);
+    System.out.println("=== END SCHEDULE CHECK ===");
     return 0; // Access granted
   }
+
 
 }
