@@ -87,7 +87,7 @@ public class DirectoryAreas {
       }
     }
 
-    System.out.println("Area with name " + name + " not found"); // ← Cambiado a System.out
+    System.out.println("Area with name " + name + " not found");
     return null;
   }
 }

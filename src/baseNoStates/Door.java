@@ -12,7 +12,6 @@ public class Door {
   private boolean closed; // physically
   private State state;
   private Area AreaTo;
-  // private static final Logger logger = LoggerFactory.getLogger(Door.class); // ← Comentado
 
   public Door(String id) {
     this.id = id;
@@ -35,21 +34,21 @@ public class Door {
       String action = request.getAction();
       doAction(action);
     } else {
-      System.out.println("Door " + id + ": not authorized"); // ← Cambiado a System.out
+      System.out.println("Door " + id + ": not authorized");
     }
     request.setDoorStateName(getStateName());
   }
 
   private void doAction(String action) {
-    System.out.println("Door " + id + ": processing action " + action); // ← Añadido para debugging
+    System.out.println("Door " + id + ": processing action " + action);
 
     switch (action) {
       case Actions.OPEN:
         if (closed && ((this.getStateName().equals("unlocked")) || (this.getStateName().equals("unlocked_shortly")))) {
           closed = false;
-          System.out.println("Door " + id + " opened"); // ← Añadido
+          System.out.println("Door " + id + " opened");
         } else {
-          System.out.println("Can't open door " + id + " because it's already open or locked"); // ← Cambiado
+          System.out.println("Can't open door " + id + " because it's already open or locked");
         }
         break;
       case Actions.CLOSE:
@@ -81,7 +80,7 @@ public class Door {
         System.exit(-1);
     }
 
-    System.out.println("Door " + id + " state after action: " + getStateName() + ", closed: " + closed); // ← Añadido
+    System.out.println("Door " + id + " state after action: " + getStateName() + ", closed: " + closed);
   }
 
   public boolean isClosed() {
@@ -120,7 +119,7 @@ public class Door {
   public void setState(State estado) {
     System.out.println("Door " + id + ": changing state from " +
         (this.state != null ? this.state.getState() : "null") +
-        " to " + estado.getState()); // ← Añadido para debugging
+        " to " + estado.getState());
     this.state = estado;
     this.state.setDoor(this);
     state.intClock();

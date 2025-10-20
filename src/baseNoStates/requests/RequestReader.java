@@ -30,7 +30,6 @@ public class RequestReader implements Request {
     this.now = now;
   }
 
-  // AÑADE ESTOS GETTERS QUE FALTAN:
   public LocalDateTime getNow() {
     return now;
   }

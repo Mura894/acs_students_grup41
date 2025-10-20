@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 public final class DirectoryDoors {
   private static ArrayList<Door> allDoors;
-  // private static final Logger logger = LoggerFactory.getLogger(DirectoryDoors.class); // ← Comentado
 
   public static void makeDoors() {
     // basement
@@ -25,7 +24,7 @@ public final class DirectoryDoors {
 
     allDoors = new ArrayList<>(Arrays.asList(d1, d2, d3, d4, d5, d6, d7, d8, d9));
 
-    System.out.println("Created " + allDoors.size() + " doors"); // ← Añadido para debugging
+    System.out.println("Created " + allDoors.size() + " doors");
   }
 
   public static Door findDoorById(String id) {
@@ -35,13 +34,13 @@ public final class DirectoryDoors {
       }
     }
 
-    System.out.println("Door with id " + id + " not found"); // ← Cambiado a System.out
-    return null; // otherwise we get a Java error
+    System.out.println("Door with id " + id + " not found");
+    return null;
   }
 
   // This is needed by RequestRefresh
   public static ArrayList<Door> getAllDoors() {
-    System.out.println("Retrieving all doors: " + allDoors.size() + " doors total"); // ← Cambiado a System.out
+    System.out.println("Retrieving all doors: " + allDoors.size() + " doors total");
     return allDoors;
   }
 }

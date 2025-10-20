@@ -12,7 +12,7 @@ public class Clock extends Observable implements Runnable {
   private Clock() {
     this.dateTime = LocalDateTime.now();
     this.running = false;
-    System.out.println("Clock instance created"); // ← Cambiado
+    System.out.println("Clock instance created");
   }
 
   public static Clock getInstance() {
