@@ -3,12 +3,14 @@ package basenostates;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //Leaf in the Composite pattern
 public class Space extends Area {
   private final ArrayList<Door> doorList = new ArrayList<>();
   private final String name;
+  private static final Logger logger = LoggerFactory.getLogger(Space.class);
 
   public Space(String s) {
     name = s;
@@ -24,7 +26,7 @@ public class Space extends Area {
     if (door != null) {
       doorList.add(door);
     } else {
-      System.out.println("Cannot add door " + id + " to space " + name + ": door not found");
+      logger.warn("Cannot add door {} to space {}: door not found", id, name);
     }
   }
 

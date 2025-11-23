@@ -2,6 +2,8 @@ package basenostates;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Group {
   private final String name;
@@ -10,6 +12,7 @@ public class Group {
   private final ArrayList<Area> areas;
   private final Schedule schedule;
   private int reason;
+  private static final Logger logger = LoggerFactory.getLogger(Group.class);
 
   public Group(String name, ArrayList<String> actions, ArrayList<User> user,
                ArrayList<Area> areas, Schedule schedule) {
@@ -28,7 +31,7 @@ public class Group {
   public void addUser(User user) {
     user.setGroup(this);
     this.user.add(user);
-    System.out.println("User " + user.getUsername() + " added to group " + name);
+    logger.debug("User {} added to group {}", user.getUsername(), name);
   }
 
   public int getReason() {
@@ -40,8 +43,8 @@ public class Group {
   }
 
   public boolean canAccess(Area area, String action, LocalDateTime now) {
-    System.out.println("Checking access for group: " + name + ", area: "
-            + area.getName() + ", action: " + action + ", time: " + now);
+    logger.debug("Checking access for group: {}, area: {}, action: {}, time: {}",
+        name, area.getName(), action, now);
 
     boolean authoriseAction = false;
     boolean authoriseArea = false;
@@ -58,7 +61,7 @@ public class Group {
         }
         if (!authoriseAction) {
           reason = 1; // No valid action
-          System.out.println("Access denied: Invalid action for Employee group");
+          logger.warn("Access denied: Invalid action for Employee group");
           return false;
         }
 
@@ -70,7 +73,7 @@ public class Group {
         }
         if (!authoriseArea) {
           reason = 2; // No valid area
-          System.out.println("Access denied: Invalid area for Employee group");
+          logger.warn("Access denied: Invalid area for Employee group");
           return false;
         }
 
@@ -79,17 +82,17 @@ public class Group {
           case 3:
             authoriseSchedule = false;
             reason = 3; // Invalid date
-            System.out.println("Access denied: Invalid date for Employee group");
+            logger.warn("Access denied: Invalid date for Employee group");
             break;
           case 4:
             authoriseSchedule = false;
             reason = 4; // Invalid day of week
-            System.out.println("Access denied: Invalid day of week for Employee group");
+            logger.warn("Access denied: Invalid day of week for Employee group");
             break;
           case 5:
             authoriseSchedule = false;
             reason = 5; // Invalid hour
-            System.out.println("Access denied: Invalid hour for Employee group");
+            logger.warn("Access denied: Invalid hour for Employee group");
             break;
           default:
             authoriseSchedule = true;
@@ -97,7 +100,7 @@ public class Group {
         }
 
         boolean result = authoriseAction && authoriseArea && authoriseSchedule;
-        System.out.println("Employee access result: " + result);
+        logger.debug("Employee access result: {}", result);
         return result;
 
       case "Manager":
@@ -106,35 +109,35 @@ public class Group {
           case 3:
             authoriseSchedule = false;
             reason = 3; // Invalid date
-            System.out.println("Access denied: Invalid date for Manager group");
+            logger.warn("Access denied: Invalid date for Manager group");
             break;
           case 4:
             authoriseSchedule = false;
             reason = 4; // Invalid day of week
-            System.out.println("Access denied: Invalid day of week for Manager group");
+            logger.warn("Access denied: Invalid day of week for Manager group");
             break;
           case 5:
             authoriseSchedule = false;
             reason = 5; // Invalid hour
-            System.out.println("Access denied: Invalid hour for Manager group");
+            logger.warn("Access denied: Invalid hour for Manager group");
             break;
           default:
             authoriseSchedule = true;
             break;
         }
 
-        System.out.println("Manager access result: " + authoriseSchedule);
+        logger.debug("Manager access result: {}", authoriseSchedule);
         return authoriseSchedule;
 
       case "Administrator":
         // Have all the permissions
-        System.out.println("Administrator access granted: full permissions");
+        logger.debug("Administrator access granted: full permissions");
         return true;
 
       default:
         // User have no permissions
         reason = 6;
-        System.out.println("Access denied: Unknown group " + name);
+        logger.warn("Access denied: Unknown group {}", name);
         return false;
     }
   }

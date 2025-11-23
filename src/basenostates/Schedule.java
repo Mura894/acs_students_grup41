@@ -3,6 +3,8 @@ package basenostates;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Schedule {
   private final LocalDateTime fromDate;
@@ -11,6 +13,7 @@ public class Schedule {
   private final LocalTime toHour;
   private final DayOfWeek fromDayOfWeek;
   private final DayOfWeek toDayOfWeek;
+  private static final Logger logger = LoggerFactory.getLogger(Schedule.class);
 
   public Schedule(LocalDateTime fromDate, LocalDateTime toDate,
                   LocalTime fromHour, LocalTime toHour, DayOfWeek fromDayOfWeek,
@@ -22,33 +25,32 @@ public class Schedule {
     this.fromDayOfWeek = fromDayOfWeek;
     this.toDayOfWeek = toDayOfWeek;
 
-    System.out.println("Schedule created: " + fromDate + " to " + toDate
-            + ", Hours: " + fromHour + "-" + toHour
-            + ", Days: " + fromDayOfWeek + "-" + toDayOfWeek);
+    logger.debug("Schedule created: {} to {}, Hours: {}-{}, Days: {}-{}",
+        fromDate, toDate, fromHour, toHour, fromDayOfWeek, toDayOfWeek);
   }
 
   public int canAccess(LocalDateTime now) {
     LocalTime horaActual = now.toLocalTime();
     DayOfWeek dia = now.getDayOfWeek();
 
-    System.out.println("=== SCHEDULE CHECK ===");
-    System.out.println("Checking schedule for: " + now);
-    System.out.println("Current day: " + dia + " (value: " + dia.getValue() + ")");
-    System.out.println("Allowed days: " + fromDayOfWeek + " to " + toDayOfWeek
-        + " (values: " + fromDayOfWeek.getValue() + "-" + toDayOfWeek.getValue() + ")");
-    System.out.println("Current time: " + horaActual);
-    System.out.println("Allowed time: " + fromHour + " to " + toHour);
+    logger.debug("=== SCHEDULE CHECK ===");
+    logger.debug("Checking schedule for: {}", now);
+    logger.debug("Current day: {} (value: {})", dia, dia.getValue());
+    logger.debug("Allowed days: {} to {} (values: {}-{})",
+        fromDayOfWeek, toDayOfWeek, fromDayOfWeek.getValue(), toDayOfWeek.getValue());
+    logger.debug("Current time: {}", horaActual);
+    logger.debug("Allowed time: {} to {}", fromHour, toHour);
 
     // 1. Verificar fecha (rango de fechas)
     if (now.isBefore(fromDate)) {
-      System.out.println("❌ Date too early: " + now + " is before " + fromDate);
+      logger.warn("Date too early: {} is before {}", now, fromDate);
       return 3; // Invalid date (too early)
     }
     if (now.isAfter(toDate)) {
-      System.out.println("❌ Date too late: " + now + " is after " + toDate);
+      logger.warn("Date too late: {} is after {}", now, toDate);
       return 3; // Invalid date (too late)
     }
-    System.out.println("✅ Date check passed");
+    logger.debug("Date check passed");
 
     // 2. Verificar día de la semana - LÓGICA CORREGIDA
     int diaValue = dia.getValue();
@@ -60,37 +62,35 @@ public class Schedule {
     if (fromDayValue <= toDayValue) {
       // Rango normal (ej: Lunes=1 a Viernes=5)
       diaValido = (diaValue >= fromDayValue && diaValue <= toDayValue);
-      System.out.println("Normal range check: " + diaValue + " between "
-              + fromDayValue + " and " + toDayValue + " = " + diaValido);
+      logger.debug("Normal range check: {} between {} and {} = {}",
+          diaValue, fromDayValue, toDayValue, diaValido);
     } else {
       // Rango que cruza domingo (ej: Viernes=5 a Lunes=1)
       diaValido = (diaValue >= fromDayValue || diaValue <= toDayValue);
-      System.out.println("Weekend cross check: " + diaValue + " >= " + fromDayValue + " OR "
-              + diaValue + " <= " + toDayValue + " = " + diaValido);
+      logger.debug("Weekend cross check: {} >= {} OR {} <= {} = {}",
+          diaValue, fromDayValue, diaValue, toDayValue, diaValido);
     }
 
     if (!diaValido) {
-      System.out.println("❌ Day not allowed: " + dia + " not between "
-              + fromDayOfWeek + " and " + toDayOfWeek);
+      logger.warn("Day not allowed: {} not between {} and {}",
+          dia, fromDayOfWeek, toDayOfWeek);
       return 4; // Invalid day of the week
     }
-    System.out.println("✅ Day check passed");
+    logger.debug("Day check passed");
 
     // 3. Verificar hora del día
     if (horaActual.isBefore(fromHour)) {
-      System.out.println("❌ Time too early: " + horaActual + " is before " + fromHour);
+      logger.warn("Time too early: {} is before {}", horaActual, fromHour);
       return 5; // Invalid time (too early)
     }
     if (horaActual.isAfter(toHour)) {
-      System.out.println("❌ Time too late: " + horaActual + " is after " + toHour);
+      logger.warn("Time too late: {} is after {}", horaActual, toHour);
       return 5; // Invalid time (too late)
     }
-    System.out.println("✅ Time check passed");
+    logger.debug("Time check passed");
 
-    System.out.println("🎉 Schedule check PASSED for: " + now);
-    System.out.println("=== END SCHEDULE CHECK ===");
+    logger.debug("Schedule check PASSED for: {}", now);
+    logger.debug("=== END SCHEDULE CHECK ===");
     return 0; // Access granted
   }
-
-
 }

@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestReader implements Request {
   private final String credential; // who
@@ -20,6 +22,7 @@ public class RequestReader implements Request {
   private final ArrayList<String> reasons; // why not authorized
   private String doorStateName;
   private boolean doorClosed;
+  private static final Logger logger = LoggerFactory.getLogger(RequestReader.class);
 
   public RequestReader(String credential, String action, LocalDateTime now, String doorId) {
     this.credential = credential;
@@ -97,14 +100,14 @@ public class RequestReader implements Request {
   // see if the request is authorized and put this into the request, then send it to the door.
   // if authorized, perform the action.
   public void process() {
-    System.out.println("Processing reader request - Door: "
-            + doorId + ", Action: " + action + ", User: " + credential);
+    logger.debug("Processing reader request - Door: {}, Action: {}, User: {}",
+        doorId, action, credential);
 
     User user = DirectoryUsers.findUserByCredential(credential);
     Door door = DirectoryDoors.findDoorById(doorId);
 
     if (door == null) {
-      System.out.println("ERROR: Door " + doorId + " not found");
+      logger.error("ERROR: Door {} not found", doorId);
       authorized = false;
       addReason("Door not found");
       return;
@@ -118,8 +121,8 @@ public class RequestReader implements Request {
     // the requests made to the server as part of processing the request
     doorClosed = door.isClosed();
 
-    System.out.println("Request processed - Authorized: "
-            + authorized + ", Final state: " + doorStateName);
+    logger.debug("Request processed - Authorized: {}, Final state: {}",
+        authorized, doorStateName);
   }
 
   // the result is put into the request object plus, if not authorized, why not,
@@ -128,23 +131,23 @@ public class RequestReader implements Request {
     if (user == null) {
       authorized = false;
       addReason("User doesn't exist");
-      System.out.println("Authorization failed: user not found");
+      logger.warn("Authorization failed: user not found");
     } else {
-      System.out.println("Authorizing user: " + user.getUsername() + " for door: " + doorId);
+      logger.debug("Authorizing user: {} for door: {}", user.getUsername(), doorId);
 
       // Obtener el área de destino de la puerta
       Area areaTo = door.getAreaTo();
       if (areaTo == null) {
-        System.out.println("Warning: Door " + doorId + " has no destination area");
+        logger.warn("Warning: Door {} has no destination area", doorId);
         authorized = true; // Temporal para testing
       } else {
         // Verificar permisos usando el grupo del usuario
         authorized = user.canAccess(areaTo, getAction(), getNow());
         if (!authorized) {
           addReason(user.getReasonMessage());
-          System.out.println("Authorization failed: " + user.getReasonMessage());
+          logger.warn("Authorization failed: {}", user.getReasonMessage());
         } else {
-          System.out.println("Authorization granted for user: " + user.getUsername());
+          logger.info("Authorization granted for user: {}", user.getUsername());
         }
       }
     }
