@@ -1,8 +1,8 @@
 package basenostates;
 
 import basenostates.requests.Request;
-import basenostates.requests.RequestReader;
 import basenostates.requests.RequestArea;
+import basenostates.requests.RequestReader;
 import basenostates.requests.RequestRefresh;
 import java.io.BufferedReader;
 import java.io.IOException;

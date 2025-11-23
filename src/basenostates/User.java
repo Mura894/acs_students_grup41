@@ -47,7 +47,7 @@ public class User {
   @Override
   public String toString() {
     return "User{name=" + name + ", credential=" + credential
-       + ", group=" + (group != null ? group.getName() : "none") + "}";
+            + ", group=" + (group != null ? group.getName() : "none") + "}";
   }
 
   public int getReason() {
