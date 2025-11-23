@@ -90,7 +90,8 @@ public class UnlockedShortly extends State implements Observer {
       clockThread.start();
       clock.addObserver(this);
       dateTime = LocalDateTime.now();
-      System.out.println("UnlockedShortly timer started for door " + door.getId() + " at " + dateTime);
+      System.out.println("UnlockedShortly timer started for door "
+              + door.getId() + " at " + dateTime);
     }
   }
 }

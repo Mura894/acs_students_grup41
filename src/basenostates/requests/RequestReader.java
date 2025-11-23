@@ -1,13 +1,12 @@
 package basenostates.requests;
 
+import basenostates.Area;
 import basenostates.DirectoryDoors;
 import basenostates.DirectoryUsers;
 import basenostates.Door;
-import basenostates.Area;
 import basenostates.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 

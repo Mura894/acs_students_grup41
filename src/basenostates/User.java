@@ -14,8 +14,8 @@ public class User {
     this.name = name;
     this.credential = credential;
     this.group = group;
-    System.out.println("User created: " + name + " with group: " +
-        (group != null ? group.getName() : "none"));
+    System.out.println("User created: " + name + " with group: "
+        + (group != null ? group.getName() : "none"));
   }
 
 
@@ -36,8 +36,8 @@ public class User {
 
   public void setGroup(Group group) {
     this.group = group;
-    System.out.println("User " + name + " assigned to group: " +
-        (group != null ? group.getName() : "none"));
+    System.out.println("User " + name + " assigned to group: "
+        + (group != null ? group.getName() : "none"));
   }
 
   public Group getGroup() {
@@ -46,8 +46,8 @@ public class User {
 
   @Override
   public String toString() {
-    return "User{name=" + name + ", credential=" + credential +
-        ", group=" + (group != null ? group.getName() : "none") + "}";
+    return "User{name=" + name + ", credential=" + credential
+       + ", group=" + (group != null ? group.getName() : "none") + "}";
   }
 
   public int getReason() {

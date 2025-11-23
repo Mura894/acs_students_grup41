@@ -1,9 +1,9 @@
 package basenostates;
 
+import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 
 //Leaf in the Composite pattern
 public class Space extends Area {
@@ -34,7 +34,7 @@ public class Space extends Area {
   }
 
   @Override
-  public Area findAreaById(String Name) {
+  public Area findAreaById(String name) {
     return this;
   }
 

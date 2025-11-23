@@ -12,7 +12,9 @@ public class Schedule {
   private final DayOfWeek fromDayOfWeek;
   private final DayOfWeek toDayOfWeek;
 
-  public Schedule(LocalDateTime fromDate, LocalDateTime toDate, LocalTime fromHour, LocalTime toHour, DayOfWeek fromDayOfWeek, DayOfWeek toDayOfWeek) {
+  public Schedule(LocalDateTime fromDate, LocalDateTime toDate,
+                  LocalTime fromHour, LocalTime toHour, DayOfWeek fromDayOfWeek,
+                  DayOfWeek toDayOfWeek) {
     this.fromDate = fromDate;
     this.toDate = toDate;
     this.fromHour = fromHour;
@@ -20,9 +22,9 @@ public class Schedule {
     this.fromDayOfWeek = fromDayOfWeek;
     this.toDayOfWeek = toDayOfWeek;
 
-    System.out.println("Schedule created: " + fromDate + " to " + toDate +
-        ", Hours: " + fromHour + "-" + toHour +
-        ", Days: " + fromDayOfWeek + "-" + toDayOfWeek);
+    System.out.println("Schedule created: " + fromDate + " to " + toDate
+            + ", Hours: " + fromHour + "-" + toHour
+            + ", Days: " + fromDayOfWeek + "-" + toDayOfWeek);
   }
 
   public int canAccess(LocalDateTime now) {
@@ -32,8 +34,8 @@ public class Schedule {
     System.out.println("=== SCHEDULE CHECK ===");
     System.out.println("Checking schedule for: " + now);
     System.out.println("Current day: " + dia + " (value: " + dia.getValue() + ")");
-    System.out.println("Allowed days: " + fromDayOfWeek + " to " + toDayOfWeek +
-        " (values: " + fromDayOfWeek.getValue() + "-" + toDayOfWeek.getValue() + ")");
+    System.out.println("Allowed days: " + fromDayOfWeek + " to " + toDayOfWeek
+        + " (values: " + fromDayOfWeek.getValue() + "-" + toDayOfWeek.getValue() + ")");
     System.out.println("Current time: " + horaActual);
     System.out.println("Allowed time: " + fromHour + " to " + toHour);
 
@@ -58,15 +60,18 @@ public class Schedule {
     if (fromDayValue <= toDayValue) {
       // Rango normal (ej: Lunes=1 a Viernes=5)
       diaValido = (diaValue >= fromDayValue && diaValue <= toDayValue);
-      System.out.println("Normal range check: " + diaValue + " between " + fromDayValue + " and " + toDayValue + " = " + diaValido);
+      System.out.println("Normal range check: " + diaValue + " between "
+              + fromDayValue + " and " + toDayValue + " = " + diaValido);
     } else {
       // Rango que cruza domingo (ej: Viernes=5 a Lunes=1)
       diaValido = (diaValue >= fromDayValue || diaValue <= toDayValue);
-      System.out.println("Weekend cross check: " + diaValue + " >= " + fromDayValue + " OR " + diaValue + " <= " + toDayValue + " = " + diaValido);
+      System.out.println("Weekend cross check: " + diaValue + " >= " + fromDayValue + " OR "
+              + diaValue + " <= " + toDayValue + " = " + diaValido);
     }
 
     if (!diaValido) {
-      System.out.println("❌ Day not allowed: " + dia + " not between " + fromDayOfWeek + " and " + toDayOfWeek);
+      System.out.println("❌ Day not allowed: " + dia + " not between "
+              + fromDayOfWeek + " and " + toDayOfWeek);
       return 4; // Invalid day of the week
     }
     System.out.println("✅ Day check passed");
