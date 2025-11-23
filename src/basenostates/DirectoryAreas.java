@@ -12,7 +12,7 @@ public class DirectoryAreas {
   private static Area rootArea;
   private static final Logger logger = LoggerFactory.getLogger(DirectoryAreas.class);
 
-  DirectoryAreas() {
+  private DirectoryAreas() {
     makeAreas();
   }
 

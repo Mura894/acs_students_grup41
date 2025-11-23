@@ -2,8 +2,6 @@ package basenostates;
 
 import basenostates.requests.RequestReader;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 //Class that represents a door and its actions
 public class Door {
@@ -11,7 +9,6 @@ public class Door {
   private boolean closed; // physically
   private State state;
   private Area areaTo;
-  private static final Logger logger = LoggerFactory.getLogger(Door.class);
 
   public Door(String id) {
     this.id = id;
@@ -34,34 +31,34 @@ public class Door {
       String action = request.getAction();
       doAction(action);
     } else {
-      logger.warn("Door {}: not authorized", id);
+      System.out.println("Door " + id + ": not authorized");
     }
     request.setDoorStateName(getStateName());
   }
 
   private void doAction(String action) {
-    logger.debug("Door {}: processing action {}", id, action);
+    System.out.println("Door " + id + ": processing action " + action);
 
     switch (action) {
       case Actions.OPEN:
         if (closed && ((this.getStateName().equals("unlocked"))
-            || (this.getStateName().equals("unlocked_shortly")))) {
+                || (this.getStateName().equals("unlocked_shortly")))) {
           closed = false;
-          logger.info("Door {} opened", id);
+          System.out.println("Door " + id + " opened");
         } else {
-          logger.warn("Can't open door {} because it's already open or locked", id);
+          System.out.println("Can't open door " + id + " because it's already open or locked");
         }
         break;
       case Actions.CLOSE:
         if (closed) {
-          logger.warn("Can't close door {} because it's already closed", id);
+          System.out.println("Can't close door " + id + " because it's already closed");
         } else {
           closed = true;
-          logger.info("Door {} closed", id);
+          System.out.println("✅ Door " + id + " closed");
 
           // If it is in the propped state and is closed, return to locked
           if (getStateName().equals("propped")) {
-            logger.info("Door was PROPPED - returning to LOCKED state after close");
+            System.out.println("Door was PROPPED - returning to LOCKED state after close");
             setState(new Locked(this));
           }
         }
@@ -74,14 +71,15 @@ public class Door {
         break;
       case Actions.UNLOCK_SHORTLY:
         state.unlockShortly();
-        logger.debug("Unlock shortly action processed for door {}", id);
+        System.out.println("Unlock shortly action processed for door " + id);
         break;
       default:
         assert false : "Unknown action " + action;
         System.exit(-1);
     }
 
-    logger.debug("Door {} state after action: {}, closed: {}", id, getStateName(), closed);
+    System.out.println("Door " + id + " state after action: "
+            + getStateName() + ", closed: " + closed);
   }
 
   public boolean isClosed() {
@@ -118,8 +116,9 @@ public class Door {
   }
 
   public void setState(State estado) {
-    logger.debug("Door {}: changing state from {} to {}", id,
-        (this.state != null ? this.state.getState() : "null"), estado.getState());
+    System.out.println("Door " + id + ": changing state from "
+            + (this.state != null ? this.state.getState() : "null")
+            + " to " + estado.getState());
     this.state = estado;
     this.state.setDoor(this);
     state.intClock();
