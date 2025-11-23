@@ -9,7 +9,7 @@ public class DirectoryAreas {
   private static Partition building;
   private static Area rootArea;
 
-  DirectoryAreas() {
+  private DirectoryAreas() {
     makeAreas();
   }
 

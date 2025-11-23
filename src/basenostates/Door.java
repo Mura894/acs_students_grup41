@@ -24,9 +24,10 @@ public class Door {
     setState(new Unlocked(this));
   }
 
+  // it is the Door that process the request because the door has and knows
+  // its state, and if closed or open
   public void processRequest(RequestReader request) {
-    // it is the Door that process the request because the door has and knows
-    // its state, and if closed or open
+
     if (request.isAuthorized()) {
       String action = request.getAction();
       doAction(action);
@@ -54,7 +55,7 @@ public class Door {
           System.out.println("Can't close door " + id + " because it's already closed");
         } else {
           closed = true;
-          System.out.println("✅ Door " + id + " closed");
+          System.out.println(" Door " + id + " closed");
 
           // If it is in the propped state and is closed, return to locked
           if (getStateName().equals("propped")) {
@@ -101,10 +102,10 @@ public class Door {
   @Override
   public String toString() {
     return "Door{"
-        + "id='" + id + '\''
-        + ", closed=" + closed
-        + ", state=" + getStateName()
-        + "}";
+            + "id='" + id + '\''
+            + ", closed=" + closed
+            + ", state=" + getStateName()
+            + "}";
   }
 
   public JSONObject toJson() {
