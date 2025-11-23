@@ -2,9 +2,12 @@ package basenostates;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class DirectoryDoors {
   private static ArrayList<Door> allDoors;
+  private static final Logger logger = LoggerFactory.getLogger(DirectoryDoors.class);
 
   public static void makeDoors() {
     // basement
@@ -24,7 +27,7 @@ public final class DirectoryDoors {
 
     allDoors = new ArrayList<>(Arrays.asList(d1, d2, d3, d4, d5, d6, d7, d8, d9));
 
-    System.out.println("Created " + allDoors.size() + " doors");
+    logger.info("Created {} doors", allDoors.size());
   }
 
   public static Door findDoorById(String id) {
@@ -34,13 +37,13 @@ public final class DirectoryDoors {
       }
     }
 
-    System.out.println("Door with id " + id + " not found");
+    logger.warn("Door with id {} not found", id);
     return null;
   }
 
   // This is needed by RequestRefresh
   public static ArrayList<Door> getAllDoors() {
-    System.out.println("Retrieving all doors: " + allDoors.size() + " doors total");
+    logger.debug("Retrieving all doors: {} doors total", allDoors.size());
     return allDoors;
   }
 }

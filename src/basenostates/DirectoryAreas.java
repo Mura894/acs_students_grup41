@@ -2,12 +2,15 @@ package basenostates;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DirectoryAreas {
   private static DirectoryAreas instance;
   private static ArrayList<Area> allAreas;
   private static Partition building;
   private static Area rootArea;
+  private static final Logger logger = LoggerFactory.getLogger(DirectoryAreas.class);
 
   DirectoryAreas() {
     makeAreas();
@@ -72,7 +75,7 @@ public class DirectoryAreas {
     building.add(exterior);
 
     allAreas = new ArrayList<>(Arrays.asList(
-            parking, hall, room1, room2, room3, corridor, itRoom, stairs,
+        parking, hall, room1, room2, room3, corridor, itRoom, stairs,
         exterior, basement, groundFloor, floor1, building));
   }
 
@@ -88,7 +91,7 @@ public class DirectoryAreas {
       }
     }
 
-    System.out.println("Area with name " + name + " not found");
+    logger.warn("Area with name {} not found", name);
     return null;
   }
 }

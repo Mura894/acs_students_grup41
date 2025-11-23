@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestArea implements Request {
   private final String credential;
@@ -16,12 +17,13 @@ public class RequestArea implements Request {
   private final String areaId;
   private final LocalDateTime now;
   private final ArrayList<RequestReader> requests = new ArrayList<>();
+  private static final Logger logger = LoggerFactory.getLogger(RequestArea.class);
 
   public RequestArea(String credential, String action, LocalDateTime now, String areaId) {
     this.credential = credential;
     this.areaId = areaId;
     assert action.equals(Actions.LOCK) || action.equals(Actions.UNLOCK)
-            : "invalid action " + action + " for an area request";
+        : "invalid action " + action + " for an area request";
     this.action = action;
     this.now = now;
   }
@@ -52,12 +54,12 @@ public class RequestArea implements Request {
       requestsDoorsStr = requests.toString();
     }
     return "Request{"
-            + "credential=" + credential
-            + ", action=" + action
-            + ", now=" + now
-            + ", areaId=" + areaId
-            + ", requestsDoors=" + requestsDoorsStr
-            + "}";
+        + "credential=" + credential
+        + ", action=" + action
+        + ", now=" + now
+        + ", areaId=" + areaId
+        + ", requestsDoors=" + requestsDoorsStr
+        + "}";
   }
 
   // processing the request of an area is creating the corresponding door requests and forwarding
@@ -77,23 +79,18 @@ public class RequestArea implements Request {
       // Make all the door requests, one for each door in the area, and process them.
       // Look for the doors in the spaces of this area that give access to them.
       for (Door door : area.getDoorsGivingAccess()) {
-        // Solo para ver si funciona bien
-        System.out.println("Processing door: " + door.getId()
-                + " for area: " + areaId);
+        logger.debug("Processing door: {} for area: {}", door.getId(), areaId);
         RequestReader requestReader =
-                new RequestReader(credential, action, now, door.getId());
+            new RequestReader(credential, action, now, door.getId());
         requestReader.process();
         // after process() the area request contains the answer as the answer
         // to each individual door request, that is read by the simulator/Flutter app
         requests.add(requestReader);
       }
 
-      // Solo para ver si funciona bien
-      System.out.println("Processed " + requests.size()
-              + " doors for area: " + areaId);
+      logger.info("Processed {} doors for area: {}", requests.size(), areaId);
     } else {
-      // Solo para ver si funciona bien
-      System.out.println("Area " + areaId + " not found");
+      logger.warn("Area {} not found", areaId);
     }
   }
 }

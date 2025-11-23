@@ -1,8 +1,12 @@
 package basenostates;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 //Class that represents the state of the door when it is unlocked
 public class Unlocked extends State {
   private Door door;
+  private static final Logger logger = LoggerFactory.getLogger(Unlocked.class);
 
   public Unlocked(Door door) {
     this.door = door;
@@ -10,22 +14,22 @@ public class Unlocked extends State {
 
   @Override
   public void unlock() {
-    System.out.println("The door " + door.getId() + " is already unlocked");
+    logger.warn("The door {} is already unlocked", door.getId());
   }
 
   @Override
   public void lock() {
     if (door.isClosed()) {
       door.setState(new Locked(door));
-      System.out.println("Locking door " + door.getId());
+      logger.info("Locking door {}", door.getId());
     } else {
-      System.out.println("Not possible to lock door " + door.getId() + " because it is open");
+      logger.warn("Not possible to lock door {} because it is open", door.getId());
     }
   }
 
   @Override
   public void unlockShortly() {
-    System.out.println("The door " + door.getId() + " is already unlocked");
+    logger.warn("The door {} is already unlocked", door.getId());
   }
 
   @Override

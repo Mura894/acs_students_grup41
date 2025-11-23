@@ -3,6 +3,8 @@ package basenostates;
 import java.time.LocalDateTime;
 import java.util.Observable;
 import java.util.Observer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //Class that represents the state of the unlocked shortly
 public class UnlockedShortly extends State implements Observer {
@@ -10,30 +12,31 @@ public class UnlockedShortly extends State implements Observer {
   private LocalDateTime dateTime;
   private Clock clock;
   Thread clockThread;
+  private static final Logger logger = LoggerFactory.getLogger(UnlockedShortly.class);
 
   public UnlockedShortly(Door door) {
     this.door = door;
-    System.out.println("Door " + door.getId() + " entered UnlockedShortly state");
+    logger.info("Door {} entered UnlockedShortly state", door.getId());
   }
 
   @Override
   public void unlock() {
-    System.out.println("The door " + door.getId() + " is already in unlocked_shortly state");
+    logger.warn("The door {} is already in unlocked_shortly state", door.getId());
   }
 
   @Override
   public void lock() {
     if (door.isClosed()) {
       door.setState(new Locked(door));
-      System.out.println("Locking door " + door.getId() + " from unlocked_shortly state");
+      logger.info("Locking door {} from unlocked_shortly state", door.getId());
     } else {
-      System.out.println("Not possible to lock door " + door.getId() + " because it is open");
+      logger.warn("Not possible to lock door {} because it is open", door.getId());
     }
   }
 
   @Override
   public void unlockShortly() {
-    System.out.println("The door " + door.getId() + " is already in unlocked_shortly state");
+    logger.warn("The door {} is already in unlocked_shortly state", door.getId());
   }
 
   @Override
@@ -53,31 +56,31 @@ public class UnlockedShortly extends State implements Observer {
       LocalDateTime currentTime = (LocalDateTime) arg;
       long secondsPassed = dateTime.until(currentTime, java.time.temporal.ChronoUnit.SECONDS);
 
-      System.out.println("=== UNLOCKED_SHORTLY TIMER UPDATE ===");
-      System.out.println("Door " + door.getId() + " - Time elapsed: " + secondsPassed + "s");
-      System.out.println("Door closed: " + door.isClosed());
-      System.out.println("Current state: " + door.getStateName());
+      logger.debug("=== UNLOCKED_SHORTLY TIMER UPDATE ===");
+      logger.debug("Door {} - Time elapsed: {}s", door.getId(), secondsPassed);
+      logger.debug("Door closed: {}", door.isClosed());
+      logger.debug("Current state: {}", door.getStateName());
 
       if (secondsPassed >= 10) {
         if (door.isClosed()) {
-          System.out.println(">>> 10+ seconds passed and door CLOSED - locking automatically");
+          logger.info("10+ seconds passed and door CLOSED - locking automatically");
           this.lock();
           clock.deleteObserver(this);
           dateTime = null;
           clock.setRunning(false);
-          System.out.println(">>> Door " + door.getId() + " returned to LOCKED state");
+          logger.info("Door {} returned to LOCKED state", door.getId());
         } else {
-          System.out.println(">>> 10+ seconds passed and door STILL OPEN - changing to PROPPED");
+          logger.info("10+ seconds passed and door STILL OPEN - changing to PROPPED");
           door.setState(new Propped(door));
           clock.deleteObserver(this);
           dateTime = null;
           clock.setRunning(false);
-          System.out.println(">>> Door " + door.getId() + " changed to PROPPED state");
+          logger.info("Door {} changed to PROPPED state", door.getId());
         }
       } else {
-        System.out.println("Timer still running... " + (10 - secondsPassed) + "s remaining");
+        logger.debug("Timer still running... {}s remaining", (10 - secondsPassed));
       }
-      System.out.println("=== END TIMER UPDATE ===");
+      logger.debug("=== END TIMER UPDATE ===");
     }
   }
 
@@ -90,8 +93,7 @@ public class UnlockedShortly extends State implements Observer {
       clockThread.start();
       clock.addObserver(this);
       dateTime = LocalDateTime.now();
-      System.out.println("UnlockedShortly timer started for door "
-              + door.getId() + " at " + dateTime);
+      logger.info("UnlockedShortly timer started for door {} at {}", door.getId(), dateTime);
     }
   }
 }
