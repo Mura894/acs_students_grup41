@@ -6,10 +6,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class DirectoryDoors {
-  private static ArrayList<Door> allDoors;
+  private static DirectoryDoors instance;
+  private ArrayList<Door> allDoors;
   private static final Logger logger = LoggerFactory.getLogger(DirectoryDoors.class);
 
-  public static void makeDoors() {
+  private DirectoryDoors() {
+    makeDoors();
+  }
+
+  public static DirectoryDoors getInstance() {
+    if (instance == null) {
+      instance = new DirectoryDoors();
+    }
+    return instance;
+  }
+
+  private void makeDoors() {
     // basement
     Door d1 = new Door("D1", new Space("exterior"), new Space("parking")); // exterior, parking
     Door d2 = new Door("D2", new Space("stairs"), new Space("parking")); // stairs, parking
@@ -30,7 +42,7 @@ public final class DirectoryDoors {
     logger.info("Created {} doors", allDoors.size());
   }
 
-  public static Door findDoorById(String id) {
+  public Door findDoorById(String id) {
     for (Door door : allDoors) {
       if (door.getId().equals(id)) {
         return door;
@@ -42,7 +54,7 @@ public final class DirectoryDoors {
   }
 
   // This is needed by RequestRefresh
-  public static ArrayList<Door> getAllDoors() {
+  public ArrayList<Door> getAllDoors() {
     logger.debug("Retrieving all doors: {} doors total", allDoors.size());
     return allDoors;
   }

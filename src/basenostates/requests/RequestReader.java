@@ -103,8 +103,8 @@ public class RequestReader implements Request {
     logger.debug("Processing reader request - Door: {}, Action: {}, User: {}",
         doorId, action, credential);
 
-    User user = DirectoryUsers.findUserByCredential(credential);
-    Door door = DirectoryDoors.findDoorById(doorId);
+    User user = DirectoryUsers.getInstance().findUserByCredential(credential);
+    Door door = DirectoryDoors.getInstance().findDoorById(doorId);
 
     if (door == null) {
       logger.error("ERROR: Door {} not found", doorId);

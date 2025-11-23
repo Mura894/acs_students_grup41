@@ -5,9 +5,9 @@ package basenostates;
 
 public class Main {
   public static void main(String[] args) {
-    DirectoryDoors.makeDoors(); //We create the Doors here
+    DirectoryDoors.getInstance(); //We create the Doors here
     DirectoryAreas.getInstance(); //We make the Doors part of Areas with calling the constructor
-    DirectoryUsers.makeUsers();
+    DirectoryUsers.getInstance();
     new WebServer();
   }
 }

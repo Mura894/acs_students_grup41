@@ -22,7 +22,7 @@ public class Space extends Area {
   }
 
   public void addDoor(String id) {
-    Door door = DirectoryDoors.findDoorById(id);
+    Door door = DirectoryDoors.getInstance().findDoorById(id);
     if (door != null) {
       doorList.add(door);
     } else {
