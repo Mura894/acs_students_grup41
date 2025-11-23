@@ -5,7 +5,8 @@ package baseNoStates;
 
 public class Main {
   public static void main(String[] args) {
-    DirectoryDoors.makeDoors();
+    DirectoryDoors.makeDoors(); //We create the Doors here
+    DirectoryAreas.getInstance(); //We make the Doors part of Areas with calling the constructor
     DirectoryUsers.makeUsers();
     new WebServer();
   }
