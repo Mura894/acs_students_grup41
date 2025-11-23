@@ -1,4 +1,4 @@
-package baseNoStates;
+package basenostates;
 
 //Class to be able to apply the State pattern to the doors
 public abstract class State {

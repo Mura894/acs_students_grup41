@@ -1,4 +1,4 @@
-package baseNoStates;
+package basenostates;
 
 import java.util.ArrayList;
 import org.json.JSONObject;
@@ -10,7 +10,7 @@ public abstract class Area {
   //Function to obtain all the doors that give access to an area
   public abstract ArrayList<Door> getDoorsGivingAccess();
 
-  public abstract Area findAreaById(String Name);
+  public abstract Area findAreaById(String name);
 
   public abstract JSONObject toJson(int depth);
 }

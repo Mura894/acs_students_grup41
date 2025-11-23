@@ -1,4 +1,4 @@
-package baseNoStates;
+package basenostates;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -102,10 +102,14 @@ public final class DirectoryUsers {
 
     ArrayList<String> blankActions = new ArrayList<>();
 
-    Group blankGroup = new Group("Blank", blankActions, new ArrayList<>(), new ArrayList<>(), blankSchedule);
-    Group employeeGroup = new Group("Employee", employeeActions, new ArrayList<>(), employeeAreas, employeeSchedule);
-    Group managerGroup = new Group("Manager", managerActions, new ArrayList<>(), allAreas, managerSchedule);
-    Group adminGroup = new Group("Administrator", adminActions, new ArrayList<>(), allAreas, adminSchedule);
+    Group blankGroup = new Group(
+            "Blank", blankActions, new ArrayList<>(), new ArrayList<>(), blankSchedule);
+    Group employeeGroup = new Group(
+            "Employee", employeeActions, new ArrayList<>(), employeeAreas, employeeSchedule);
+    Group managerGroup = new Group(
+            "Manager", managerActions, new ArrayList<>(), allAreas, managerSchedule);
+    Group adminGroup = new Group(
+            "Administrator", adminActions, new ArrayList<>(), allAreas, adminSchedule);
 
     groups.add(blankGroup);
     groups.add(employeeGroup);
@@ -154,8 +158,8 @@ public final class DirectoryUsers {
 
     // Show summary
     for (Group group : groups) {
-      System.out.println("Group " + group.getName() + " has " +
-              group.getUsers().size() + " users");
+      System.out.println("Group " + group.getName() + " has "
+              + group.getUsers().size() + " users");
     }
   }
 

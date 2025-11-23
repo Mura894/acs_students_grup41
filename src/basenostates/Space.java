@@ -1,4 +1,4 @@
-package baseNoStates;
+package basenostates;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

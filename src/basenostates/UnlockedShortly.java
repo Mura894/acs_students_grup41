@@ -1,4 +1,4 @@
-package baseNoStates;
+package basenostates;
 
 import java.time.LocalDateTime;
 import java.util.Observable;

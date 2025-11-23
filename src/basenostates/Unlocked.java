@@ -1,4 +1,4 @@
-package baseNoStates;
+package basenostates;
 
 //Class that represents the state of the door when it is unlocked
 public class Unlocked extends State {

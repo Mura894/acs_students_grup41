@@ -1,15 +1,13 @@
-package baseNoStates.requests;
+package basenostates.requests;
 
-import baseNoStates.Actions;
-import baseNoStates.DirectoryAreas;
-import baseNoStates.DirectoryDoors;
-import baseNoStates.Door;
-import baseNoStates.Area;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import basenostates.Actions;
+import basenostates.Area;
+import basenostates.DirectoryAreas;
+import basenostates.Door;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 public class RequestArea implements Request {
@@ -17,8 +15,7 @@ public class RequestArea implements Request {
   private final String action;
   private final String areaId;
   private final LocalDateTime now;
-  private ArrayList<RequestReader> requests = new ArrayList<>();
-
+  private final ArrayList<RequestReader> requests = new ArrayList<>();
 
   public RequestArea(String credential, String action, LocalDateTime now, String areaId) {
     this.credential = credential;
@@ -49,7 +46,7 @@ public class RequestArea implements Request {
   @Override
   public String toString() {
     String requestsDoorsStr;
-    if (requests.size() == 0) {
+    if (requests.isEmpty()) {
       requestsDoorsStr = "";
     } else {
       requestsDoorsStr = requests.toString();
@@ -74,23 +71,29 @@ public class RequestArea implements Request {
     // an Area is a Space or a Partition
     if (area != null) {
       // is null when from the app we click on an action but no place is selected because
-      // there (flutter) I don't control like I do in javascript that all the parameters are provided
+      // there (flutter) I don't control like I do in javascript that all the parameters
+      // are provided
 
       // Make all the door requests, one for each door in the area, and process them.
       // Look for the doors in the spaces of this area that give access to them.
       for (Door door : area.getDoorsGivingAccess()) {
-        System.out.println("Processing door: " + door.getId() + " for area: " + areaId);//Solo para ver si funciona bien
-        RequestReader requestReader = new RequestReader(credential, action, now, door.getId());
+        // Solo para ver si funciona bien
+        System.out.println("Processing door: " + door.getId()
+                + " for area: " + areaId);
+        RequestReader requestReader =
+                new RequestReader(credential, action, now, door.getId());
         requestReader.process();
         // after process() the area request contains the answer as the answer
         // to each individual door request, that is read by the simulator/Flutter app
         requests.add(requestReader);
       }
-      System.out.println("Processed " + requests.size() + " doors for area: " + areaId);//Solo para ver si funciona bien
-    }
-    else {
-      System.out.println("Area " + areaId + " not found");//Solo para ver si funciona bien
-    }
 
+      // Solo para ver si funciona bien
+      System.out.println("Processed " + requests.size()
+              + " doors for area: " + areaId);
+    } else {
+      // Solo para ver si funciona bien
+      System.out.println("Area " + areaId + " not found");
+    }
   }
 }

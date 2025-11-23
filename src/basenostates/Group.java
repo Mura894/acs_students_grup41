@@ -1,4 +1,4 @@
-package baseNoStates;
+package basenostates;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,7 +11,8 @@ public class Group {
   private final Schedule schedule;
   private int reason;
 
-  public Group(String name, ArrayList<String> actions, ArrayList<User> user, ArrayList<Area> areas, Schedule schedule) {
+  public Group(String name, ArrayList<String> actions, ArrayList<User> user,
+               ArrayList<Area> areas, Schedule schedule) {
     this.name = name;
     this.actions = actions;
     this.user = user;
@@ -39,7 +40,8 @@ public class Group {
   }
 
   public boolean canAccess(Area area, String action, LocalDateTime now) {
-    System.out.println("Checking access for group: " + name + ", area: " + area.getName() + ", action: " + action + ", time: " + now);
+    System.out.println("Checking access for group: " + name + ", area: "
+            + area.getName() + ", action: " + action + ", time: " + now);
 
     boolean authoriseAction = false;
     boolean authoriseArea = false;
@@ -139,15 +141,23 @@ public class Group {
 
   public String getReasonMessage() {
     switch (reason) {
-      case 1: return "Not allowed action for group " + name;
-      case 2: return "Not allowed area for group " + name;
-      case 3: return "Date not in schedule for group " + name;
-      case 4: return "Day of week not in schedule for group " + name;
-      case 5: return "Time not in schedule for group " + name;
-      case 6: return "Unknown group " + name;
-      default: return "Access granted for group " + name;
+      case 1:
+        return "Not allowed action for group " + name;
+      case 2:
+        return "Not allowed area for group " + name;
+      case 3:
+        return "Date not in schedule for group " + name;
+      case 4:
+        return "Day of week not in schedule for group " + name;
+      case 5:
+        return "Time not in schedule for group " + name;
+      case 6:
+        return "Unknown group " + name;
+      default:
+        return "Access granted for group " + name;
     }
   }
+
   public ArrayList<User> getUsers() {
     return user;
   }

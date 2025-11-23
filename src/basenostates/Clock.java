@@ -1,7 +1,7 @@
-package baseNoStates;
+package basenostates;
 
-import java.util.Observable;
 import java.time.LocalDateTime;
+import java.util.Observable;
 
 //Clock class that implements the singleton pattern
 public class Clock extends Observable implements Runnable {

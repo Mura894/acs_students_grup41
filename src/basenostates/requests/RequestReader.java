@@ -1,10 +1,10 @@
-package baseNoStates.requests;
+package basenostates.requests;
 
-import baseNoStates.DirectoryDoors;
-import baseNoStates.DirectoryUsers;
-import baseNoStates.Door;
-import baseNoStates.User;
-import baseNoStates.Area;
+import basenostates.DirectoryDoors;
+import basenostates.DirectoryUsers;
+import basenostates.Door;
+import basenostates.Area;
+import basenostates.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -98,7 +98,8 @@ public class RequestReader implements Request {
   // see if the request is authorized and put this into the request, then send it to the door.
   // if authorized, perform the action.
   public void process() {
-    System.out.println("Processing reader request - Door: " + doorId + ", Action: " + action + ", User: " + credential);
+    System.out.println("Processing reader request - Door: "
+            + doorId + ", Action: " + action + ", User: " + credential);
 
     User user = DirectoryUsers.findUserByCredential(credential);
     Door door = DirectoryDoors.findDoorById(doorId);
@@ -118,7 +119,8 @@ public class RequestReader implements Request {
     // the requests made to the server as part of processing the request
     doorClosed = door.isClosed();
 
-    System.out.println("Request processed - Authorized: " + authorized + ", Final state: " + doorStateName);
+    System.out.println("Request processed - Authorized: "
+            + authorized + ", Final state: " + doorStateName);
   }
 
   // the result is put into the request object plus, if not authorized, why not,

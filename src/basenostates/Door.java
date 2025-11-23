@@ -1,17 +1,14 @@
-package baseNoStates;
+package basenostates;
 
-import baseNoStates.requests.RequestReader;
-import baseNoStates.requests.RequestRefresh;
+import basenostates.requests.RequestReader;
 import org.json.JSONObject;
-
-import java.time.LocalDateTime;
 
 //Class that represents a door and its actions
 public class Door {
   private final String id;
   private boolean closed; // physically
   private State state;
-  private Area AreaTo;
+  private Area areaTo;
 
   public Door(String id) {
     this.id = id;
@@ -19,10 +16,10 @@ public class Door {
     setState(new Unlocked(this));
   }
 
-  public Door(String id, Area AreaFrom, Area AreaTo) {
+  public Door(String id, Area areaFrom, Area areaTo) {
     this.id = id;
-    this.AreaTo = AreaTo;
-    this.AreaTo.getDoorsGivingAccess();
+    this.areaTo = areaTo;
+    this.areaTo.getDoorsGivingAccess();
     closed = true;
     setState(new Unlocked(this));
   }
@@ -44,7 +41,8 @@ public class Door {
 
     switch (action) {
       case Actions.OPEN:
-        if (closed && ((this.getStateName().equals("unlocked")) || (this.getStateName().equals("unlocked_shortly")))) {
+        if (closed && ((this.getStateName().equals("unlocked"))
+                || (this.getStateName().equals("unlocked_shortly")))) {
           closed = false;
           System.out.println("Door " + id + " opened");
         } else {
@@ -80,7 +78,8 @@ public class Door {
         System.exit(-1);
     }
 
-    System.out.println("Door " + id + " state after action: " + getStateName() + ", closed: " + closed);
+    System.out.println("Door " + id + " state after action: "
+            + getStateName() + ", closed: " + closed);
   }
 
   public boolean isClosed() {
@@ -96,7 +95,7 @@ public class Door {
   }
 
   public Area getAreaTo() {
-    return AreaTo;
+    return areaTo;
   }
 
   @Override
@@ -117,9 +116,9 @@ public class Door {
   }
 
   public void setState(State estado) {
-    System.out.println("Door " + id + ": changing state from " +
-        (this.state != null ? this.state.getState() : "null") +
-        " to " + estado.getState());
+    System.out.println("Door " + id + ": changing state from "
+            + (this.state != null ? this.state.getState() : "null")
+            + " to " + estado.getState());
     this.state = estado;
     this.state.setDoor(this);
     state.intClock();
