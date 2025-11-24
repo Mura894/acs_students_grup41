@@ -34,7 +34,7 @@
         <appender-ref ref="DEBUG_FILE" />
     </logger>
 
-    <!-- Global configuration -->
+    <!-- Global configuration  -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
