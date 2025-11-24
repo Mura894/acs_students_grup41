@@ -14,10 +14,12 @@ public final class DirectoryUsers {
   private final ArrayList<Group> groups = new ArrayList<>();
   private static final Logger logger = LoggerFactory.getLogger(DirectoryUsers.class);
 
+  // Private constructor for singleton pattern
   private DirectoryUsers() {
     makeUsers();
   }
 
+  // Get the singleton instance of DirectoryUsers
   public static DirectoryUsers getInstance() {
     if (instance == null) {
       instance = new DirectoryUsers();
@@ -25,6 +27,7 @@ public final class DirectoryUsers {
     return instance;
   }
 
+  // Create users, groups and their permissions
   private void makeUsers() {
     logger.info("Creating users and groups...");
 
@@ -117,6 +120,7 @@ public final class DirectoryUsers {
 
     ArrayList<String> blankActions = new ArrayList<>();
 
+    // Create groups with their respective permissions and schedules
     Group blankGroup = new Group(
         "Blank", blankActions, new ArrayList<>(), new ArrayList<>(), blankSchedule);
     Group employeeGroup = new Group(
@@ -177,6 +181,7 @@ public final class DirectoryUsers {
     }
   }
 
+  // Find a user by their credential
   public User findUserByCredential(String credential) {
     for (User user : users) {
       if (user.getCredential().equals(credential)) {

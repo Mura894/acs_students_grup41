@@ -19,25 +19,30 @@ public class RequestArea implements Request {
   private final ArrayList<RequestReader> requests = new ArrayList<>();
   private static final Logger logger = LoggerFactory.getLogger(RequestArea.class);
 
+  // Constructor for area access request
   public RequestArea(String credential, String action, LocalDateTime now, String areaId) {
     this.credential = credential;
     this.areaId = areaId;
+    // Validate that the action is either LOCK or UNLOCK
     assert action.equals(Actions.LOCK) || action.equals(Actions.UNLOCK)
         : "invalid action " + action + " for an area request";
     this.action = action;
     this.now = now;
   }
 
+  // Get the action associated with this request
   public String getAction() {
     return action;
   }
 
+  // Convert the request response to JSON format
   @Override
   public JSONObject answerToJson() {
     JSONObject json = new JSONObject();
     json.put("action", action);
     json.put("areaId", areaId);
     JSONArray jsonRequests = new JSONArray();
+    // Add all door requests to the JSON array
     for (RequestReader rd : requests) {
       jsonRequests.put(rd.answerToJson());
     }
@@ -45,6 +50,7 @@ public class RequestArea implements Request {
     return json;
   }
 
+  // String representation of the request
   @Override
   public String toString() {
     String requestsDoorsStr;
@@ -62,7 +68,7 @@ public class RequestArea implements Request {
         + "}";
   }
 
-  // processing the request of an area is creating the corresponding door requests and forwarding
+  // Processing the request of an area is creating the corresponding door requests and forwarding
   // them to all of its doors. For some it may be authorized and action will be done, for others
   // it won't be authorized and nothing will happen to them.
   public void process() {
@@ -80,6 +86,7 @@ public class RequestArea implements Request {
       // Look for the doors in the spaces of this area that give access to them.
       for (Door door : area.getDoorsGivingAccess()) {
         logger.debug("Processing door: {} for area: {}", door.getId(), areaId);
+        // Create a new door request for each door in the area
         RequestReader requestReader =
             new RequestReader(credential, action, now, door.getId());
         requestReader.process();

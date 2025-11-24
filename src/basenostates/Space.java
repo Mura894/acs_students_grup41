@@ -12,15 +12,18 @@ public class Space extends Area {
   private final String name;
   private static final Logger logger = LoggerFactory.getLogger(Space.class);
 
+  // Constructor for Space with name
   public Space(String s) {
     name = s;
   }
 
+  // Get the name of this space
   @Override
   public String getName() {
     return name;
   }
 
+  // Add a door to this space by door ID
   public void addDoor(String id) {
     Door door = DirectoryDoors.getInstance().findDoorById(id);
     if (door != null) {
@@ -30,16 +33,19 @@ public class Space extends Area {
     }
   }
 
+  // Get all doors that give access to this space
   @Override
   public ArrayList<Door> getDoorsGivingAccess() {
     return doorList;
   }
 
+  // Find area by name within this space
   @Override
   public Area findAreaById(String name) {
     return this;
   }
 
+  // Convert space to JSON representation with specified depth
   public JSONObject toJson(int depth) {
     JSONObject json = new JSONObject();
     json.put("class", "space");

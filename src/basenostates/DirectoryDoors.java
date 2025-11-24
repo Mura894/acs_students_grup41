@@ -10,10 +10,12 @@ public final class DirectoryDoors {
   private ArrayList<Door> allDoors;
   private static final Logger logger = LoggerFactory.getLogger(DirectoryDoors.class);
 
+  // Private constructor for singleton pattern
   private DirectoryDoors() {
     makeDoors();
   }
 
+  // Get the singleton instance of DirectoryDoors
   public static DirectoryDoors getInstance() {
     if (instance == null) {
       instance = new DirectoryDoors();
@@ -21,6 +23,7 @@ public final class DirectoryDoors {
     return instance;
   }
 
+  // Create all doors with their connected areas
   private void makeDoors() {
     // basement
     Door d1 = new Door("D1", new Space("exterior"), new Space("parking")); // exterior, parking
@@ -37,11 +40,13 @@ public final class DirectoryDoors {
     Door d8 = new Door("D8", new Space("corridor"), new Space("room3")); // corridor, room3
     Door d9 = new Door("D9", new Space("corridor"), new Space("IT")); // corridor, IT
 
+    // Store all doors in a list
     allDoors = new ArrayList<>(Arrays.asList(d1, d2, d3, d4, d5, d6, d7, d8, d9));
 
     logger.info("Created {} doors", allDoors.size());
   }
 
+  // Find a door by its ID
   public Door findDoorById(String id) {
     for (Door door : allDoors) {
       if (door.getId().equals(id)) {

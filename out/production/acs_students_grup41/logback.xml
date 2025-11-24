@@ -1,0 +1,42 @@
+<configuration>
+    <!-- Appender para CONSOLA -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender para ACTIVITY.LOG (archivo de texto plano) -->
+    <appender name="ACTIVITY_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>activity.log</file>
+        <append>false</append> <!-- Sobrescribe el archivo cada ejecución -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender para DEBUG.LOG (logs detallados) -->
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>debug.log</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger específico para WEBSERVER (activity log) -->
+    <logger name="Activity" level="INFO">
+        <appender-ref ref="ACTIVITY_FILE" />
+    </logger>
+
+    <!-- Logger para el resto del proyecto (debug) -->
+    <logger name="basenostates" level="DEBUG">
+        <appender-ref ref="DEBUG_FILE" />
+    </logger>
+
+    <!-- Configuración global -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

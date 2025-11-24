@@ -9,6 +9,7 @@ import org.json.JSONObject;
 public class RequestRefresh implements Request {
   private final ArrayList<JSONObject> jsonsDoors = new ArrayList<>();
 
+  // Convert the refresh request response to JSON format
   @Override
   public JSONObject answerToJson() {
     JSONObject json = new JSONObject();
@@ -17,6 +18,7 @@ public class RequestRefresh implements Request {
     return json;
   }
 
+  // String representation of the refresh request
   @Override
   public String toString() {
     return "RequestRefresh{"
@@ -31,6 +33,7 @@ public class RequestRefresh implements Request {
   // works or not, retrieves the state of all the doors so that the simulator can
   // repaint the readers
   public void process() {
+    // Get all doors from directory and add their JSON representation to the list
     for (Door door : DirectoryDoors.getInstance().getAllDoors()) {
       jsonsDoors.add(door.toJson());
     }

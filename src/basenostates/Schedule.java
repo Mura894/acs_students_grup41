@@ -15,6 +15,7 @@ public class Schedule {
   private final DayOfWeek toDayOfWeek;
   private static final Logger logger = LoggerFactory.getLogger(Schedule.class);
 
+  // Constructor for Schedule with date, time, and day constraints
   public Schedule(LocalDateTime fromDate, LocalDateTime toDate,
                   LocalTime fromHour, LocalTime toHour, DayOfWeek fromDayOfWeek,
                   DayOfWeek toDayOfWeek) {
@@ -29,6 +30,7 @@ public class Schedule {
         fromDate, toDate, fromHour, toHour, fromDayOfWeek, toDayOfWeek);
   }
 
+  // Check if access is allowed at the given date and time
   public int canAccess(LocalDateTime now) {
     LocalTime horaActual = now.toLocalTime();
     DayOfWeek dia = now.getDayOfWeek();
@@ -41,7 +43,7 @@ public class Schedule {
     logger.debug("Current time: {}", horaActual);
     logger.debug("Allowed time: {} to {}", fromHour, toHour);
 
-    // 1. Verificar fecha (rango de fechas)
+    // 1. Check date range
     if (now.isBefore(fromDate)) {
       logger.warn("Date too early: {} is before {}", now, fromDate);
       return 3; // Invalid date (too early)
@@ -52,7 +54,7 @@ public class Schedule {
     }
     logger.debug("Date check passed");
 
-    // 2. Verificar día de la semana - LÓGICA CORREGIDA
+    // 2. Check day of week - CORRECTED LOGIC
     int diaValue = dia.getValue();
     int fromDayValue = fromDayOfWeek.getValue();
     int toDayValue = toDayOfWeek.getValue();
@@ -60,12 +62,12 @@ public class Schedule {
     boolean diaValido;
 
     if (fromDayValue <= toDayValue) {
-      // Rango normal (ej: Lunes=1 a Viernes=5)
+      // Normal range (e.g., Monday=1 to Friday=5)
       diaValido = (diaValue >= fromDayValue && diaValue <= toDayValue);
       logger.debug("Normal range check: {} between {} and {} = {}",
           diaValue, fromDayValue, toDayValue, diaValido);
     } else {
-      // Rango que cruza domingo (ej: Viernes=5 a Lunes=1)
+      // Range that crosses Sunday (e.g., Friday=5 to Monday=1)
       diaValido = (diaValue >= fromDayValue || diaValue <= toDayValue);
       logger.debug("Weekend cross check: {} >= {} OR {} <= {} = {}",
           diaValue, fromDayValue, diaValue, toDayValue, diaValido);
@@ -78,7 +80,7 @@ public class Schedule {
     }
     logger.debug("Day check passed");
 
-    // 3. Verificar hora del día
+    // 3. Check time of day
     if (horaActual.isBefore(fromHour)) {
       logger.warn("Time too early: {} is before {}", horaActual, fromHour);
       return 5; // Invalid time (too early)

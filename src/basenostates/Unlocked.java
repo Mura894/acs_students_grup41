@@ -8,15 +8,18 @@ public class Unlocked extends State {
   private Door door;
   private static final Logger logger = LoggerFactory.getLogger(Unlocked.class);
 
+  // Constructor for Unlocked state
   public Unlocked(Door door) {
     this.door = door;
   }
 
+  // Door is already unlocked, so log a warning
   @Override
   public void unlock() {
     logger.warn("The door {} is already unlocked", door.getId());
   }
 
+  // Lock the door if it is closed
   @Override
   public void lock() {
     if (door.isClosed()) {
@@ -27,20 +30,24 @@ public class Unlocked extends State {
     }
   }
 
+  // Door is already unlocked, so log a warning
   @Override
   public void unlockShortly() {
     logger.warn("The door {} is already unlocked", door.getId());
   }
 
+  // Set the door reference for this state
   @Override
   public void setDoor(Door puerta) {
     this.door = puerta;
   }
 
+  // Get the name of this state
   public String getState() {
     return "unlocked";
   }
 
+  // Initialize clock for this state (no action needed for unlocked state)
   @Override
   public void intClock() {
   }

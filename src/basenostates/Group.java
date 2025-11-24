@@ -14,6 +14,7 @@ public class Group {
   private int reason;
   private static final Logger logger = LoggerFactory.getLogger(Group.class);
 
+  // Constructor for Group with permissions and schedule
   public Group(String name, ArrayList<String> actions, ArrayList<User> user,
                ArrayList<Area> areas, Schedule schedule) {
     this.name = name;
@@ -24,24 +25,29 @@ public class Group {
     this.reason = 0;
   }
 
+  // Get the group name
   public String getName() {
     return name;
   }
 
+  // Add a user to this group
   public void addUser(User user) {
     user.setGroup(this);
     this.user.add(user);
     logger.debug("User {} added to group {}", user.getUsername(), name);
   }
 
+  // Get the reason code for access denial
   public int getReason() {
     return reason;
   }
 
+  // Set the reason code for access denial
   public void setReason(int reason) {
     this.reason = reason;
   }
 
+  // Check if the group can access a specific area with given action at specified time
   public boolean canAccess(Area area, String action, LocalDateTime now) {
     logger.debug("Checking access for group: {}, area: {}, action: {}, time: {}",
         name, area.getName(), action, now);
@@ -51,8 +57,10 @@ public class Group {
     int reasonSchedule = 0;
     boolean authoriseSchedule;
 
+    // Check permissions based on group type
     switch (name) {
       case "Employee":
+        // Check if action is allowed for Employee group
         for (String accion : actions) {
           if (action.equals(accion)) {
             authoriseAction = true;
@@ -65,6 +73,7 @@ public class Group {
           return false;
         }
 
+        // Check if area is allowed for Employee group
         for (Area areaIteration : areas) {
           if (area.getName().equals(areaIteration.getName())) {
             authoriseArea = true;
@@ -77,6 +86,7 @@ public class Group {
           return false;
         }
 
+        // Check schedule constraints
         reasonSchedule = schedule.canAccess(now);
         switch (reasonSchedule) {
           case 3:
@@ -104,6 +114,7 @@ public class Group {
         return result;
 
       case "Manager":
+        // Check schedule constraints for Manager group
         reasonSchedule = schedule.canAccess(now);
         switch (reasonSchedule) {
           case 3:
@@ -142,6 +153,7 @@ public class Group {
     }
   }
 
+  // Get human-readable reason message for access denial
   public String getReasonMessage() {
     switch (reason) {
       case 1:
@@ -161,6 +173,7 @@ public class Group {
     }
   }
 
+  // Get all users in this group
   public ArrayList<User> getUsers() {
     return user;
   }

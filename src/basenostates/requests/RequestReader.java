@@ -24,6 +24,7 @@ public class RequestReader implements Request {
   private boolean doorClosed;
   private static final Logger logger = LoggerFactory.getLogger(RequestReader.class);
 
+  // Constructor for door access request
   public RequestReader(String credential, String action, LocalDateTime now, String doorId) {
     this.credential = credential;
     this.action = action;
@@ -32,43 +33,52 @@ public class RequestReader implements Request {
     this.now = now;
   }
 
+  // Get the timestamp of the request
   public LocalDateTime getNow() {
     return now;
   }
 
+  // Get the credential used for the request
   public String getCredential() {
     return credential;
   }
 
+  // Set the current state name of the door
   public void setDoorStateName(String name) {
     doorStateName = name;
   }
 
+  // Set whether the door is closed or not
   public void setDoorClosed(boolean closed) {
     doorClosed = closed;
   }
 
+  // Get the action requested (lock/unlock)
   public String getAction() {
     return action;
   }
 
+  // Check if the request is authorized
   public boolean isAuthorized() {
     return authorized;
   }
 
+  // Add a reason for authorization denial
   public void addReason(String reason) {
     reasons.add(reason);
   }
 
-  // Métodos para acceder a los estados de la puerta (si los necesitas)
+  // Methods to access door states (if you need them)
   public String getDoorStateName() {
     return doorStateName;
   }
 
+  // Check if the door is closed
   public boolean isDoorClosed() {
     return doorClosed;
   }
 
+  // String representation of the request
   @Override
   public String toString() {
     if (userName == null) {
@@ -86,6 +96,7 @@ public class RequestReader implements Request {
         + "}";
   }
 
+  // Convert the request response to JSON format
   public JSONObject answerToJson() {
     JSONObject json = new JSONObject();
     json.put("authorized", authorized);
@@ -103,9 +114,11 @@ public class RequestReader implements Request {
     logger.debug("Processing reader request - Door: {}, Action: {}, User: {}",
         doorId, action, credential);
 
+    // Find user by credential and door by ID
     User user = DirectoryUsers.getInstance().findUserByCredential(credential);
     Door door = DirectoryDoors.getInstance().findDoorById(doorId);
 
+    // Check if door exists
     if (door == null) {
       logger.error("ERROR: Door {} not found", doorId);
       authorized = false;
@@ -114,11 +127,14 @@ public class RequestReader implements Request {
     }
 
     assert door != null : "door " + doorId + " not found";
+    // Authorize the user for this request
     authorize(user, door);
     // this sets the boolean authorize attribute of the request
+    // Process the request through the door
     door.processRequest(this);
     // even if not authorized we process the request, so that if desired we could log all
     // the requests made to the server as part of processing the request
+    // Update door closed status
     doorClosed = door.isClosed();
 
     logger.debug("Request processed - Authorized: {}, Final state: {}",
@@ -135,13 +151,13 @@ public class RequestReader implements Request {
     } else {
       logger.debug("Authorizing user: {} for door: {}", user.getUsername(), doorId);
 
-      // Obtener el área de destino de la puerta
+      // Get the destination area of the door
       Area areaTo = door.getAreaTo();
       if (areaTo == null) {
         logger.warn("Warning: Door {} has no destination area", doorId);
-        authorized = true; // Temporal para testing
+        authorized = true; // Temporary for testing
       } else {
-        // Verificar permisos usando el grupo del usuario
+        // Verify permissions using the user's group
         authorized = user.canAccess(areaTo, getAction(), getNow());
         if (!authorized) {
           addReason(user.getReasonMessage());

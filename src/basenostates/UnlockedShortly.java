@@ -14,16 +14,19 @@ public class UnlockedShortly extends State implements Observer {
   Thread clockThread;
   private static final Logger logger = LoggerFactory.getLogger(UnlockedShortly.class);
 
+  // Constructor for UnlockedShortly state
   public UnlockedShortly(Door door) {
     this.door = door;
     logger.info("Door {} entered UnlockedShortly state", door.getId());
   }
 
+  // Door is already in unlocked_shortly state, so log a warning
   @Override
   public void unlock() {
     logger.warn("The door {} is already in unlocked_shortly state", door.getId());
   }
 
+  // Lock the door if it is closed
   @Override
   public void lock() {
     if (door.isClosed()) {
@@ -34,16 +37,19 @@ public class UnlockedShortly extends State implements Observer {
     }
   }
 
+  // Door is already in unlocked_shortly state, so log a warning
   @Override
   public void unlockShortly() {
     logger.warn("The door {} is already in unlocked_shortly state", door.getId());
   }
 
+  // Set the door reference for this state
   @Override
   public void setDoor(Door puerta) {
     this.door = puerta;
   }
 
+  // Get the name of this state
   public String getState() {
     return "unlocked_shortly";
   }
@@ -84,6 +90,7 @@ public class UnlockedShortly extends State implements Observer {
     }
   }
 
+  // Initialize clock for this state to start the timer
   @Override
   public void intClock() {
     if (dateTime == null) {

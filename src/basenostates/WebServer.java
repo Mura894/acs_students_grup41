@@ -25,6 +25,9 @@ public class WebServer {
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
   private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
 
+  private static final Logger Activitylogger = LoggerFactory.getLogger("Activity");
+
+  // Constructor for WebServer - starts listening on specified port
   public WebServer() {
     try {
       ServerSocket serverConnect = new ServerSocket(PORT);
@@ -40,10 +43,12 @@ public class WebServer {
     }
   }
 
+  // Inner class to handle each client connection in a separate thread
   private class SocketThread extends Thread {
     // as an inner class, SocketThread sees WebServer attributes
     private final Socket insocked; // client connection via Socket class
 
+    // Constructor for socket thread
     SocketThread(Socket insocket) {
       this.insocked = insocket;
       this.start();
@@ -94,6 +99,9 @@ public class WebServer {
             logger.debug("created request {} {}", typeRequest, request);
             request.process();
             logger.debug("processed request {} {}", typeRequest, request);
+
+            Activitylogger.info(request.toString());
+
             // Make the answer as a JSON string, to be sent to the Javascript client
             String answer = makeJsonAnswer(request);
             logger.debug("answer\n{}", answer);
@@ -111,6 +119,7 @@ public class WebServer {
       }
     }
 
+    // Create appropriate request object based on tokenized input
     private Request makeRequest(String[] tokens) {
       // always return request because it contains the answer for the Javascript client
       logger.debug("tokens : {}", String.join(", ", tokens));
@@ -144,6 +153,7 @@ public class WebServer {
       return request;
     }
 
+    // Create a RequestReader from tokenized input
     private RequestReader makeRequestReader(String[] tokens) {
       String credential = tokens[2];
       String action = tokens[4];
@@ -152,6 +162,7 @@ public class WebServer {
       return new RequestReader(credential, action, dateTime, doorId);
     }
 
+    // Create a RequestArea from tokenized input
     private RequestArea makeRequestArea(String[] tokens) {
       String credential = tokens[2];
       String action = tokens[4];
@@ -160,6 +171,7 @@ public class WebServer {
       return new RequestArea(credential, action, dateTime, areaId);
     }
 
+    // Create HTTP header for the response
     private String makeHeaderAnswer() {
       String answer = "";
       answer += "HTTP/1.0 200 OK\r\n";
@@ -172,6 +184,7 @@ public class WebServer {
       return answer;
     }
 
+    // Create complete JSON response including headers
     private String makeJsonAnswer(Request request) {
       String answer = makeHeaderAnswer();
       answer += request.answerToJson().toString();

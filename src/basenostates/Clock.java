@@ -12,12 +12,14 @@ public class Clock extends Observable implements Runnable {
   private static Clock clockInstance;
   private static final Logger logger = LoggerFactory.getLogger(Clock.class);
 
+  // Private constructor for singleton pattern
   private Clock() {
     this.dateTime = LocalDateTime.now();
     this.running = false;
     logger.debug("Clock instance created");
   }
 
+  // Get the singleton instance of Clock
   public static Clock getInstance() {
     if (clockInstance == null) {
       clockInstance = new Clock();
@@ -26,15 +28,18 @@ public class Clock extends Observable implements Runnable {
     return clockInstance;
   }
 
+  // Set whether the clock is running or not
   public void setRunning(boolean running) {
     this.running = running;
     logger.debug("Clock running set to: {}", running);
   }
 
+  // Check if the clock is running
   public boolean isRunning() {
     return running;
   }
 
+  // Update the time and notify all observers
   private void tick() {
     this.dateTime = LocalDateTime.now();
     setChanged();
@@ -50,7 +55,7 @@ public class Clock extends Observable implements Runnable {
       logger.debug("Clock tick");
       this.tick();
       try {
-        Thread.sleep(1000); // Espera 1 segundo
+        Thread.sleep(1000); // Wait 1 second
       } catch (InterruptedException e) {
         logger.warn("Clock thread interrupted: {}", e.getMessage());
         Thread.currentThread().interrupt();

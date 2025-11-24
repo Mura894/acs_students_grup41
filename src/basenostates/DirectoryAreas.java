@@ -12,10 +12,12 @@ public class DirectoryAreas {
   private static Area rootArea;
   private static final Logger logger = LoggerFactory.getLogger(DirectoryAreas.class);
 
+  // Private constructor for singleton pattern
   private DirectoryAreas() {
     makeAreas();
   }
 
+  // Get the singleton instance of DirectoryAreas
   public static DirectoryAreas getInstance() {
     if (instance == null) {
       instance = new DirectoryAreas();
@@ -23,7 +25,9 @@ public class DirectoryAreas {
     return instance;
   }
 
+  // Create the area hierarchy with spaces and partitions
   public static void makeAreas() {
+    // Create all spaces (leaf nodes)
     final Space parking = new Space("parking");
     final Space hall = new Space("hall");
     final Space room1 = new Space("room1");
@@ -34,11 +38,13 @@ public class DirectoryAreas {
     final Space stairs = new Space("stairs");
     final Space exterior = new Space("exterior");
 
+    // Create partitions (composite nodes)
     final Partition basement = new Partition("basement");
     final Partition groundFloor = new Partition("ground_floor");
     final Partition floor1 = new Partition("floor1");
     building = new Partition("building");
 
+    // Add doors to spaces
     parking.addDoor("D1");
     parking.addDoor("D2");
 
@@ -58,6 +64,7 @@ public class DirectoryAreas {
     exterior.addDoor("D1");
     exterior.addDoor("D3");
 
+    // Build the hierarchy: add spaces to partitions
     basement.add(parking);
 
     groundFloor.add(hall);
@@ -68,22 +75,26 @@ public class DirectoryAreas {
     floor1.add(corridor);
     floor1.add(itRoom);
 
+    // Build the complete building hierarchy
     building.add(basement);
     building.add(groundFloor);
     building.add(floor1);
     building.add(stairs);
     building.add(exterior);
 
+    // Store all areas in a list for easy access
     allAreas = new ArrayList<>(Arrays.asList(
         parking, hall, room1, room2, room3, corridor, itRoom, stairs,
         exterior, basement, groundFloor, floor1, building));
   }
 
+  // Find an area by its name in the directory
   public static Area findAreaById(String name) {
     if (name.equals("building")) {
       rootArea = building;
       return rootArea;
     } else {
+      // Search through all areas to find the matching one
       for (Area area : allAreas) {
         if (area.getName().equals(name)) {
           return area.findAreaById(name);
